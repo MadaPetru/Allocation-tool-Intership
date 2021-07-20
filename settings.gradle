@@ -1,0 +1,4 @@
+rootProject.name = 'allocation-backend'
+
+include 'allocation-app'
+include 'allocation-api'
