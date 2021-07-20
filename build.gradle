@@ -1,0 +1,39 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '2.3.2.RELEASE'
+	id 'io.spring.dependency-management' version '1.0.9.RELEASE'
+}
+
+group = 'ro.fortech'
+version = '0.0.1-SNAPSHOT'
+
+repositories {
+	mavenCentral()
+}
+
+springBoot {
+	mainClassName = 'ro.fortech.Application'
+}
+
+allprojects {
+	apply plugin: 'idea'
+}
+
+subprojects {
+	apply plugin: 'java-library'
+	apply plugin: 'io.spring.dependency-management'
+	apply plugin: 'org.springframework.boot'
+	dependencies {
+
+		compileOnly 'org.projectlombok:lombok'
+		annotationProcessor 'org.projectlombok:lombok'
+		testCompileOnly 'org.projectlombok:lombok'
+		testAnnotationProcessor 'org.projectlombok:lombok'
+
+		annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
+		implementation 'org.slf4j:slf4j-api:1.7.30'
+		implementation 'javax.validation:validation-api:2.0.1.Final'
+		testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	}
+}
+
