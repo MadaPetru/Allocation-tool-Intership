@@ -16,5 +16,9 @@ jar {
 }
 
 dependencies {
+	implementation group: 'org.springframework', name: 'spring-web', version: '5.3.8'
+	implementation group: 'io.swagger', name: 'swagger-annotations', version: '1.6.2'
+	implementation group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.12.4'
+
 
 }
