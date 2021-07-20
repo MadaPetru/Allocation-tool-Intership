@@ -20,6 +20,7 @@ jar {
 
 dependencies {
 
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation project(':allocation-api')
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
