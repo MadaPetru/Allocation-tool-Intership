@@ -21,6 +21,8 @@ jar {
 dependencies {
 
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation group: 'org.springframework', name: 'spring-web', version: '5.3.8'
 	implementation project(':allocation-api')
+	runtimeOnly 'mysql:mysql-connector-java'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
