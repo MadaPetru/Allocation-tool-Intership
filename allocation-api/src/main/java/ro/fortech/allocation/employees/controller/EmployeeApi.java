@@ -34,7 +34,6 @@ public interface EmployeeApi {
     ResponseEntity<EmployeeDto> findEmployeeById(@PathVariable Long employeeId);
 
     @ResponseStatus(code = HttpStatus.OK)
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Get all employees")
     @ApiResponses(value={
             @ApiResponse(code=200, message="Success")
@@ -43,7 +42,6 @@ public interface EmployeeApi {
     ResponseEntity<List<EmployeeDto>> findAllEmployees();
 
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Delete an employee by id")
     @ApiResponses(value={
             @ApiResponse(code=204, message="Successfully deleted an employee"),
