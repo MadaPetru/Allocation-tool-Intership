@@ -6,7 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ro.fortech.allocation.employees.dto.EmployeeDto;
 import ro.fortech.allocation.employees.exception.EmployeeNotFoundException;
 import ro.fortech.allocation.employees.service.EmployeeService;
@@ -15,8 +15,14 @@ import java.util.List;
 
 @RequiredArgsConstructor(onConstructor=@__(@Autowired))
 @RestController
+@CrossOrigin
 public class EmployeeController implements EmployeeApi{
     private final EmployeeService employeeService;
+    @Override
+    public ResponseEntity<List<EmployeeDto>> findAllEmployees(){
+        return new ResponseEntity(employeeService.findAll(),HttpStatus.OK);
+    }
+
 
     @Override
     public ResponseEntity<EmployeeDto> addEmployee(EmployeeDto employeeDto) {
@@ -31,11 +37,6 @@ public class EmployeeController implements EmployeeApi{
         catch (EmployeeNotFoundException e){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-    }
-
-    @Override
-    public Page<EmployeeDto>findAllEmployees(Pageable pageable) {
-        return employeeService.findAll(pageable);//,HttpStatus.OK);
     }
 
     @Override

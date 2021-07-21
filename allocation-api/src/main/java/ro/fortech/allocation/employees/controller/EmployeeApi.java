@@ -17,6 +17,16 @@ import java.util.List;
 @RequestMapping("/employees")
 public interface EmployeeApi {
 
+
+    @ResponseStatus(code = HttpStatus.OK)
+    @ApiOperation(value = "Get all employees")
+    @ApiResponses(value={
+            @ApiResponse(code=200, message="Success")
+    })
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<List<EmployeeDto>> findAllEmployees();
+
+
     @ResponseStatus(code = HttpStatus.CREATED)
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Add new employee")
@@ -34,14 +44,6 @@ public interface EmployeeApi {
     })
     @GetMapping(path="/{employeeId}",produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<EmployeeDto> findEmployeeById(@PathVariable Long employeeId);
-
-    @ResponseStatus(code = HttpStatus.OK)
-    @ApiOperation(value = "Get all employees")
-    @ApiResponses(value={
-            @ApiResponse(code=200, message="Success")
-    })
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    Page<EmployeeDto> findAllEmployees(Pageable pageable);
 
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
     @ApiOperation(value = "Delete an employee by id")
