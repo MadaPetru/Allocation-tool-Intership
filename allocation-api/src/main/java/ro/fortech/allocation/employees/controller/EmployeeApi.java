@@ -1,5 +1,7 @@
 package ro.fortech.allocation.employees.controller;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -39,7 +41,7 @@ public interface EmployeeApi {
             @ApiResponse(code=200, message="Success")
     })
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<List<EmployeeDto>> findAllEmployees();
+    Page<EmployeeDto> findAllEmployees(Pageable pageable);
 
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
     @ApiOperation(value = "Delete an employee by id")

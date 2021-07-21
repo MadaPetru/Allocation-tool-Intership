@@ -2,6 +2,8 @@ package ro.fortech.allocation.employees.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ro.fortech.allocation.employees.dto.EmployeeDto;
 import ro.fortech.allocation.employees.exception.EmployeeNotFoundException;
@@ -30,8 +32,8 @@ public class EmployeeService {
     public EmployeeDto findById(Long id){
         return fromEntityToDto(employeeRepository.findById(id).orElseThrow(()-> new EmployeeNotFoundException(id)));
     }
-    public List<EmployeeDto> findAll(){
-        return employeeRepository.findAll().stream().map(e->fromEntityToDto(e)).collect(Collectors.toList());
+    public Page<EmployeeDto> findAll(Pageable pageable){
+        return employeeRepository.findAll(pageable).map(this::fromEntityToDto);
     }
     public void deleteById(Long id){
         employeeRepository.delete(employeeRepository.findById(id).orElseThrow(()-> new EmployeeNotFoundException(id)));

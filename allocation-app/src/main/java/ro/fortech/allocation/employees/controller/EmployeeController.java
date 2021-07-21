@@ -2,6 +2,8 @@ package ro.fortech.allocation.employees.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -32,8 +34,8 @@ public class EmployeeController implements EmployeeApi{
     }
 
     @Override
-    public ResponseEntity<List<EmployeeDto>> findAllEmployees() {
-        return new ResponseEntity<>(employeeService.findAll(),HttpStatus.OK);
+    public Page<EmployeeDto>findAllEmployees(Pageable pageable) {
+        return employeeService.findAll(pageable);//,HttpStatus.OK);
     }
 
     @Override
