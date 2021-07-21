@@ -17,7 +17,8 @@ import java.util.List;
 @RestController
 @CrossOrigin
 public class EmployeeController implements EmployeeApi{
-    private final EmployeeService employeeService;
+    @Autowired
+    private EmployeeService employeeService;
     @Override
     public ResponseEntity<List<EmployeeDto>> findAllEmployees(){
         return new ResponseEntity(employeeService.findAll(),HttpStatus.OK);
@@ -31,12 +32,13 @@ public class EmployeeController implements EmployeeApi{
 
     @Override
     public ResponseEntity<EmployeeDto> findEmployeeById(Long employeeId) {
-        try{
-            return new ResponseEntity<>(employeeService.findById(employeeId),HttpStatus.OK);
-        }
-        catch (EmployeeNotFoundException e){
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+//        try{
+//            return new ResponseEntity<>(employeeService.findById(employeeId),HttpStatus.OK);
+//        }
+//        catch (EmployeeNotFoundException e){
+//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+//        }
+        return new ResponseEntity<>(employeeService.findById(employeeId),HttpStatus.OK);
     }
 
     @Override

@@ -7,25 +7,30 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 import ro.fortech.allocation.employees.dto.EmployeeDto;
 import ro.fortech.allocation.employees.exception.EmployeeNotFoundException;
 import ro.fortech.allocation.employees.model.Employee;
 import ro.fortech.allocation.employees.repository.EmployeeRepository;
 
+import javax.validation.Valid;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class EmployeeService {
+    @Autowired
+    private EmployeeRepository employeeRepository;
 
-    private final EmployeeRepository employeeRepository;
-
-    public EmployeeDto save(EmployeeDto employeeDto){
+    public EmployeeDto save(@Valid EmployeeDto employeeDto){
+        employeeDto.setUid(UUID.randomUUID().toString());
+        System.out.println(employeeDto.getUid());
         return fromEntityToDto(employeeRepository.save(fromDtoToEntity(employeeDto)));
     }
 
-    public EmployeeDto update(EmployeeDto employeeDto , Long id){
+    public EmployeeDto update(@Valid EmployeeDto employeeDto , Long id){
         employeeRepository.findById(id).orElseThrow(()-> new EmployeeNotFoundException(id));
         employeeDto.setId(id);
         return fromEntityToDto(employeeRepository.save(fromDtoToEntity(employeeDto)));
@@ -43,6 +48,7 @@ public class EmployeeService {
     public EmployeeDto fromEntityToDto(Employee employee) {
         return EmployeeDto.builder()
                 .id(employee.getId())
+                .uid(employee.getUid())
                 .active(employee.getActive())
                 .businessUnit(employee.getBusinessUnit())
                 .email(employee.getEmail())
@@ -60,6 +66,7 @@ public class EmployeeService {
     public Employee fromDtoToEntity(EmployeeDto employeeDto) {
         return Employee.builder()
                 .id(employeeDto.getId())
+                .uid(employeeDto.getUid())
                 .active(employeeDto.getActive())
                 .businessUnit(employeeDto.getBusinessUnit())
                 .email(employeeDto.getEmail())

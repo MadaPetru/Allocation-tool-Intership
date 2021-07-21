@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -19,6 +20,7 @@ public class Employee {
     @Id
     @GeneratedValue
     private Long id;
+    private String uid;
     private String name;
     private String email;
     private String internalPosition;
@@ -28,6 +30,8 @@ public class Employee {
     private String supervisor;
     private Boolean active;
     private Integer workingHours;
+    @Column(columnDefinition="DATETIME")
     private Date startDate;
+    @Column(columnDefinition="DATETIME")
     private Date endDate;
 }
