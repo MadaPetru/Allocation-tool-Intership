@@ -9,11 +9,8 @@ import org.springframework.stereotype.Service;
 import ro.fortech.allocation.project.dto.ProjectRequestDto;
 import ro.fortech.allocation.project.dto.ProjectResponseDto;
 import ro.fortech.allocation.project.repository.ProjectRepository;
-import ro.fortech.allocation.project.service.model.Project;
-
+import ro.fortech.allocation.project.model.Project;
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -22,15 +19,6 @@ public class ProjectService {
 
     private final ModelMapper modelMapper;
     private final ProjectRepository projectRepository;
-
-    public List<ProjectResponseDto> getAllProjects(){
-        List<Project> projects = projectRepository.findAll();
-        List<ProjectResponseDto> projectResponseDtos = new ArrayList<>();
-        for(Project project : projects){
-            projectResponseDtos.add(toProjectResponseDto(project));
-        }
-        return  projectResponseDtos;
-    }
 
     public  ProjectResponseDto getProjectByExternalId(String externalId){
         Project project = projectRepository.findProjectByExternalId(externalId).orElseThrow(() -> new IllegalStateException("Project with projectId " + externalId + " was not found!"));
@@ -86,7 +74,6 @@ public class ProjectService {
     }
 
     public Page<ProjectResponseDto> getProjects(Pageable pageable) {
-        Page projects = projectRepository.findAll(pageable);
-        return projects.map(project -> toProjectResponseDto((Project) project));
+        return projectRepository.findAll(pageable).map(this::toProjectResponseDto);
     }
 }

@@ -1,7 +1,9 @@
 package ro.fortech.allocation.project.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.sun.istack.NotNull;
 import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 
@@ -12,23 +14,26 @@ import java.util.Date;
 @Data
 @Builder
 public class ProjectRequestDto {
-
     private String externalId;
 
     @NotNull
-    String name;
+    private String name;
 
     @NotNull
     String client;
 
     @NotNull
-    Date startDate;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private Date startDate;
 
     @NotNull
-    Date endDate;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private Date endDate;
 
-    String description;
+    private String description;
 
     @NotNull
-    String technicalStack;
+    private String technicalStack;
 }
