@@ -2,7 +2,6 @@ package ro.fortech.allocation.project.dto;
 
 import com.sun.istack.NotNull;
 import lombok.*;
-
 import java.util.Date;
 
 @Getter
@@ -12,7 +11,6 @@ import java.util.Date;
 @Data
 @Builder
 public class ProjectRequestDto {
-
     private String externalId;
 
     @NotNull

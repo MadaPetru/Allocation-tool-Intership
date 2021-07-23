@@ -1,10 +1,7 @@
 package ro.fortech.allocation.project.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.sun.istack.NotNull;
 import lombok.*;
-import org.springframework.format.annotation.DateTimeFormat;
-
 import java.util.Date;
 
 @Getter

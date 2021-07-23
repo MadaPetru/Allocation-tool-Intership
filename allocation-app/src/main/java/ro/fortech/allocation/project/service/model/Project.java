@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.*;
 import org.springframework.stereotype.Component;
+
 import javax.persistence.*;
 import java.util.Date;
 
@@ -31,8 +32,10 @@ public class Project {
     @Column(nullable = false)
     String client;
 
+    @Column(name = "start_date")
     Date startDate;
 
+    @Column(name = "end_date")
     Date endDate;
 
     String description;
