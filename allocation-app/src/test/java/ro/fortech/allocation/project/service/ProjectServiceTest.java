@@ -7,19 +7,17 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit4.SpringRunner;
 import ro.fortech.allocation.ProjectFactory;
 import ro.fortech.allocation.project.dto.ProjectRequestDto;
 import ro.fortech.allocation.project.dto.ProjectResponseDto;
 import ro.fortech.allocation.project.repository.ProjectRepository;
-import ro.fortech.allocation.project.model.Project;
-import java.text.ParseException;
-import java.util.Collections;
+import ro.fortech.allocation.project.service.model.Project;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
@@ -28,7 +26,9 @@ import static org.mockito.Mockito.*;
 @RunWith(SpringRunner.class)
 @RequiredArgsConstructor
 
+
 public class ProjectServiceTest extends ProjectFactory {
+
     @InjectMocks
     private ProjectService projectService;
 
@@ -39,47 +39,63 @@ public class ProjectServiceTest extends ProjectFactory {
     private ModelMapper modelMapper;
 
     @Test
-    public void getProjectsTest() throws ParseException {
-        ProjectResponseDto projectResponseDto = this.getProjectResponseDto();
-        Project project = this.getProject();
+    public void getAllProjects() {
+        Project project1 = this.getProject();
+        Project project2 = this.getProject();
 
-        Pageable pageable = PageRequest.of(0, 10);
-        Page<Project> page = new PageImpl<>(Collections.singletonList(this.getProject()));
-        when(projectRepository.findAll(pageable)).thenReturn(page);
+        List<Project> projects = new ArrayList<>();
+        projects.add(project1);
+        projects.add(project2);
 
-        Page<ProjectResponseDto> projectsPage = projectService.getProjects(pageable);
-        assertEquals(1, projectsPage.getTotalElements());
+        when(projectRepository.findAll()).thenReturn(projects);
+
+
+        List<ProjectResponseDto> projectResponseDtos = projectService.getAllProjects();
+
+        assertEquals(projects.size(),projectResponseDtos.size());
+
     }
 
     @Test
-    public void getProjectByExternalIdTest() throws ParseException {
+    public void getProjectByExternalId() {
+
         ProjectResponseDto projectResponseDto = this.getProjectResponseDto();
         Project project = this.getProject();
         project.setExternalId(projectResponseDto.getExternalId());
 
+
         when(projectRepository.findProjectByExternalId(project.getExternalId())).thenReturn(Optional.of(project));
+
         when(projectService.toProjectResponseDto(project)).thenReturn(projectResponseDto);
 
         assertEquals(projectResponseDto, projectService.getProjectByExternalId(projectResponseDto.getExternalId()));
+
+
     }
 
     @Test
-    public void getProjectByExternalId_whenProjectDoesntExist_expectIllegalStateExceptionTest() throws ParseException {
+    public void getProjectByExternalId_whenProjectDoesntExist_expectIllegalStateException() {
         Project project = this.getProject();
 
+
         when(projectRepository.findProjectByExternalId(project.getExternalId())).thenReturn(Optional.empty());
+
+
 
         Exception exception = assertThrows(IllegalStateException.class,
                 () -> projectService.getProjectByExternalId(project.getExternalId()));
 
         String expectedMessage = "Project with projectId " + project.getExternalId() + " was not found!";
 
+
         assertEquals(expectedMessage, exception.getMessage());
+
+
     }
 
 
     @Test
-    public void createProjectTest() throws ParseException {
+    public void createProject() {
 
         ProjectRequestDto projectRequestDto = this.getProjectRequestDto();
         ProjectResponseDto projectResponseDto = this.getProjectResponseDto();
@@ -97,10 +113,12 @@ public class ProjectServiceTest extends ProjectFactory {
         assertEquals(projectResponseDto.getClient(), result.getClient());
         assertEquals(projectResponseDto.getDescription(), result.getDescription());
         assertEquals(projectResponseDto.getName(), result.getName());
+
+
     }
 
     @Test
-    public void updateProjectTest() throws ParseException {
+    public void updateProject() {
 
         ProjectRequestDto projectRequestDto = this.getProjectRequestDto();
         ProjectResponseDto projectResponseDto = this.getProjectResponseDto();
@@ -123,46 +141,59 @@ public class ProjectServiceTest extends ProjectFactory {
     }
 
     @Test
-    public void updateProject_whenProjectDoesntExist_expectIllegalStateExceptionTest() throws ParseException {
+    public void updateProject_whenProjectDoesntExist_expectIllegalStateException(){
         Project project = this.getProject();
         ProjectRequestDto projectRequestDto = this.getProjectRequestDto();
 
+
         when(projectRepository.findProjectByExternalId(project.getExternalId())).thenReturn(Optional.empty());
+
+
 
         Exception exception = assertThrows(IllegalStateException.class,
                 () -> projectService.updateProject(project.getExternalId(), projectRequestDto));
 
         String expectedMessage = "Project with id " + project.getExternalId() + " was not found!";
 
+
         assertEquals(expectedMessage, exception.getMessage());
     }
 
     @Test
-    public void deleteProjectTest() throws ParseException {
+    public void deleteProject() {
+
         Project project = this.getProject();
 
         when(projectRepository.existsProjectByExternalId(project.getExternalId())).thenReturn(true);
+
         projectService.deleteProject(project.getExternalId());
+
         verify(projectRepository,times(1)).deleteProjectByExternalId(project.getExternalId());
     }
 
     @Test
-    public void deleteProject_whenProjectDoesntExist_expectIllegalStateExceptionTest() throws ParseException {
+    public void deleteProject_whenProjectDoesntExist_expectIllegalStateException(){
         Project project = this.getProject();
         ProjectRequestDto projectRequestDto = this.getProjectRequestDto();
         projectRequestDto.setExternalId(project.getExternalId());
 
+
         when(projectRepository.existsProjectByExternalId(project.getExternalId())).thenReturn(false);
+
+
 
         Exception exception = assertThrows(IllegalStateException.class,
                 () -> projectService.deleteProject(project.getExternalId()));
+
         String expectedMessage = "Project with id " + project.getExternalId() + " does not exist!";
+
 
         assertEquals(expectedMessage, exception.getMessage());
     }
 
     @Test
-    public void toProjectResponseDtoTest() throws ParseException {
+    public void toProjectResponseDto() {
+
         Project project = this.getProject();
         ProjectResponseDto projectResponseDto = this.getProjectResponseDto();
         projectResponseDto.setExternalId(project.getExternalId());
@@ -177,7 +208,7 @@ public class ProjectServiceTest extends ProjectFactory {
     }
 
     @Test
-    public void toProjectRequestDtoTest() throws ParseException {
+    public void toProjectRequestDto() {
         Project project = this.getProject();
         ProjectRequestDto projectRequestDto = this.getProjectRequestDto();
         projectRequestDto.setExternalId(project.getExternalId());
@@ -186,13 +217,15 @@ public class ProjectServiceTest extends ProjectFactory {
 
         ProjectRequestDto projectRequestDto1 = projectService.toProjectRequestDto(project);
 
+
         assertEquals(project.getClient(), projectRequestDto1.getClient());
         assertEquals(project.getName(), projectRequestDto1.getName());
         assertEquals(project.getDescription(), projectRequestDto1.getDescription());
     }
 
     @Test
-    public void projectRequestDtoToProjectTest() throws ParseException {
+    public void projectRequestDtoToProject() {
+
         Project project = this.getProject();
         ProjectRequestDto projectRequestDto = this.getProjectRequestDto();
         projectRequestDto.setExternalId(project.getExternalId());
@@ -206,7 +239,8 @@ public class ProjectServiceTest extends ProjectFactory {
     }
 
     @Test
-    public void projectResponseDtoToProjectTest() throws ParseException {
+    public void projectResponseDtoToProject() {
+
         Project project = this.getProject();
         ProjectResponseDto projectResponseDto = this.getProjectResponseDto();
         projectResponseDto.setExternalId(project.getExternalId());

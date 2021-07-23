@@ -38,7 +38,8 @@ public class ProjectApiController implements ProjectApi {
 
     @Override
     public ResponseEntity<ProjectResponseDto>updateProject(@PathVariable("externalId") @Valid String externalId, @RequestBody @Valid ProjectRequestDto projectRequestDto) {
-        return ResponseEntity.ok(projectService.updateProject(externalId,  projectRequestDto));
+        ProjectResponseDto result  = projectService.updateProject(externalId,  projectRequestDto);
+        return ResponseEntity.ok(result);
     }
 
     @Override

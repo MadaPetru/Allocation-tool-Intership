@@ -1,8 +1,9 @@
 package ro.fortech.allocation.project.repository;
 
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import ro.fortech.allocation.project.model.Project;
+import ro.fortech.allocation.project.service.model.Project;
 import java.util.Optional;
 
 @Repository

@@ -7,10 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import ro.fortech.allocation.ProjectFactory;
-import ro.fortech.allocation.project.model.Project;
-import java.text.ParseException;
+import ro.fortech.allocation.project.service.model.Project;
+
 import java.util.Optional;
 import java.util.UUID;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
@@ -23,28 +24,37 @@ public class ProjectRepositoryTest extends ProjectFactory {
     private ProjectRepository projectRepository;
 
     @Test
-    public void findProjectByExternalIdTest() throws ParseException {
+    public void findProjectByExternalId() {
         Project project = this.getProject();
+
         projectRepository.save(project);
+
+
         assertEquals(Optional.of(project), projectRepository.findProjectByExternalId(project.getExternalId()));
     }
 
     @Test
-    public void deleteProjectByExternalIdTest() throws ParseException {
+    public void deleteProjectByExternalId() {
+
         Project project = this.getProject();
+
         projectRepository.save(project);
+
         assertEquals(1, projectRepository.findAll().size());
+
         projectRepository.deleteProjectByExternalId(project.getExternalId());
+
         assertEquals(0, projectRepository.findAll().size());
     }
 
     @Test
-    public void existsProjectByExternalIdTest() throws ParseException {
+    public void existsProjectByExternalId() {
         Project project = this.getProject();
 
         projectRepository.save(project);
 
         assertTrue(projectRepository.existsProjectByExternalId(project.getExternalId()));
         assertFalse(projectRepository.existsProjectByExternalId( UUID.randomUUID().toString()));
+
     }
 }

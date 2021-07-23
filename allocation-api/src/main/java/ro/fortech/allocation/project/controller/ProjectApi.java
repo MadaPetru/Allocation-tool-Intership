@@ -38,7 +38,6 @@ public interface ProjectApi {
             @ApiResponse(code=201, message="Project created"),
             @ApiResponse(code=400, message="Bad request")
     })
-    @ResponseBody
     ResponseEntity<ProjectResponseDto> createProject(@RequestBody ProjectRequestDto projectRequestDto);
 
     @ResponseStatus(code=HttpStatus.OK)
@@ -49,7 +48,6 @@ public interface ProjectApi {
             @ApiResponse(code=400, message = "Bad request"),
             @ApiResponse(code=404, message="Project to be updated not found.")
     })
-    @ResponseBody
     ResponseEntity<ProjectResponseDto> updateProject(@PathVariable String externalId, @RequestBody ProjectRequestDto projectRequestDto);
 
     @ResponseStatus(code = HttpStatus.NO_CONTENT)

@@ -1,4 +1,4 @@
-package ro.fortech.allocation.project.model;
+package ro.fortech.allocation.project.service.model;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
@@ -26,20 +26,19 @@ public class Project {
     private Long id;
 
     @Column(nullable = false)
-    private String name;
+    String name;
 
     @Column(nullable = false)
-    private String client;
+    String client;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date startDate;
+    Date startDate;
 
-    private Date endDate;
+    Date endDate;
 
-    private String description;
+    String description;
 
     @Column(name = "technical_stack", length = 500)
-    private String technicalStack;
+    String technicalStack;
 
     @Column(unique = true, name = "external_id")
     private String externalId;

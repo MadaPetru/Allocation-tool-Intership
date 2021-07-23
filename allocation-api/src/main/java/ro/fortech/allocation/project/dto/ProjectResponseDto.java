@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.sun.istack.NotNull;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
+
 import java.util.Date;
 
 @Getter
@@ -16,23 +17,19 @@ public class ProjectResponseDto {
     private String externalId;
 
     @NotNull
-    private String name;
+    String name;
 
     @NotNull
-    private String client;
+    String client;
 
     @NotNull
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private Date startDate;
+    Date startDate;
 
     @NotNull
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private Date endDate;
+    Date endDate;
 
-    private String description;
+    String description;
 
     @NotNull
-    private String technicalStack;
+    String technicalStack;
 }
