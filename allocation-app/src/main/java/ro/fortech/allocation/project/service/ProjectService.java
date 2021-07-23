@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ro.fortech.allocation.project.dto.ProjectRequestDto;
 import ro.fortech.allocation.project.dto.ProjectResponseDto;
+import ro.fortech.allocation.project.exception.ProjectNotFoundException;
 import ro.fortech.allocation.project.repository.ProjectRepository;
 import ro.fortech.allocation.project.model.Project;
 import javax.transaction.Transactional;
@@ -21,7 +22,7 @@ public class ProjectService {
     private final ProjectRepository projectRepository;
 
     public  ProjectResponseDto getProjectByExternalId(String externalId){
-        Project project = projectRepository.findProjectByExternalId(externalId).orElseThrow(() -> new IllegalStateException("Project with projectId " + externalId + " was not found!"));
+        Project project = projectRepository.findProjectByExternalId(externalId).orElseThrow(() -> new ProjectNotFoundException(externalId));
         return this.toProjectResponseDto(project);
     }
 
@@ -35,7 +36,7 @@ public class ProjectService {
 
     @Transactional
     public ProjectResponseDto updateProject(String externalId, ProjectRequestDto projectToUpdate) {
-        Project project = projectRepository.findProjectByExternalId(externalId).orElseThrow(() -> new IllegalStateException("Project with id " + externalId + " was not found!"));
+        Project project = projectRepository.findProjectByExternalId(externalId).orElseThrow(() -> new ProjectNotFoundException(externalId));
 
         project.setName(projectToUpdate.getName());
         project.setClient(projectToUpdate.getClient());
@@ -52,7 +53,7 @@ public class ProjectService {
     public  void deleteProject(String externalId){
         boolean exists = projectRepository.existsProjectByExternalId(externalId);
         if(!exists) {
-            throw new IllegalStateException("Project with id " + externalId + " does not exist!");
+            throw new ProjectNotFoundException(externalId);
         }
         projectRepository.deleteProjectByExternalId(externalId);
     }

@@ -17,14 +17,12 @@ import org.springframework.data.web.config.EnableSpringDataWebSupport;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import ro.fortech.allocation.ProjectFactory;
 import ro.fortech.allocation.project.dto.ProjectRequestDto;
 import ro.fortech.allocation.project.dto.ProjectResponseDto;
 import ro.fortech.allocation.project.service.ProjectService;
 
-import java.text.ParseException;
 import java.util.Collections;
 import java.util.TimeZone;
 
@@ -39,9 +37,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @EnableSpringDataWebSupport
 public class ProjectApiControllerTest extends ProjectFactory {
-
-    public ProjectApiControllerTest() throws ParseException {
-    }
 
     @Before
     public void setup() {
@@ -113,9 +108,8 @@ public class ProjectApiControllerTest extends ProjectFactory {
     @Test
     public void deleteProjectTest() throws Exception {
         ProjectRequestDto projectRequestDto = this.getProjectRequestDto();
-        ProjectResponseDto projectResponseDto = this.getProjectResponseDto();
 
-        ResultActions result = mockMvc.perform(delete(PROJECTS_URL + "/" + projectRequestDto.getExternalId())
+         mockMvc.perform(delete(PROJECTS_URL + "/" + projectRequestDto.getExternalId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(projectRequestDto)))
                 .andExpect(status().isOk());
