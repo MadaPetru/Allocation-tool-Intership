@@ -3,7 +3,6 @@ package ro.fortech.allocation.project.model;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.*;
-import org.hibernate.validator.constraints.Length;
 import org.springframework.stereotype.Component;
 import javax.persistence.*;
 import java.util.Date;
@@ -21,7 +20,7 @@ import java.util.Date;
         generator = ObjectIdGenerators.PropertyGenerator.class,
         property = "id")
 public class Project {
-    @Column(nullable = false, updatable = false, unique = true)
+    @Column(nullable = false)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -35,16 +34,14 @@ public class Project {
     @Temporal(TemporalType.TIMESTAMP)
     private Date startDate;
 
-    @Temporal(TemporalType.TIMESTAMP)
     private Date endDate;
 
-    @Column(length = 2000)
     private String description;
 
     @Column(name = "technical_stack", length = 500)
     private String technicalStack;
 
-    @Column(unique = true, name = "external_id", updatable = false)
+    @Column(unique = true, name = "external_id")
     private String externalId;
 }
 

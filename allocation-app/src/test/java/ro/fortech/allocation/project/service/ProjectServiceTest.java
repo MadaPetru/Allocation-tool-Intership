@@ -15,7 +15,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import ro.fortech.allocation.ProjectFactory;
 import ro.fortech.allocation.project.dto.ProjectRequestDto;
 import ro.fortech.allocation.project.dto.ProjectResponseDto;
-import ro.fortech.allocation.project.exception.ProjectNotFoundException;
 import ro.fortech.allocation.project.repository.ProjectRepository;
 import ro.fortech.allocation.project.model.Project;
 import java.text.ParseException;
@@ -41,6 +40,9 @@ public class ProjectServiceTest extends ProjectFactory {
 
     @Test
     public void getProjectsTest() throws ParseException {
+        ProjectResponseDto projectResponseDto = this.getProjectResponseDto();
+        Project project = this.getProject();
+
         Pageable pageable = PageRequest.of(0, 10);
         Page<Project> page = new PageImpl<>(Collections.singletonList(this.getProject()));
         when(projectRepository.findAll(pageable)).thenReturn(page);
@@ -62,15 +64,15 @@ public class ProjectServiceTest extends ProjectFactory {
     }
 
     @Test
-    public void getProjectByExternalId_whenProjectDoesntExist_expectProjectNotFoundExceptionTest() throws ParseException {
+    public void getProjectByExternalId_whenProjectDoesntExist_expectIllegalStateExceptionTest() throws ParseException {
         Project project = this.getProject();
 
         when(projectRepository.findProjectByExternalId(project.getExternalId())).thenReturn(Optional.empty());
 
-        Exception exception = assertThrows(ProjectNotFoundException.class,
+        Exception exception = assertThrows(IllegalStateException.class,
                 () -> projectService.getProjectByExternalId(project.getExternalId()));
 
-        String expectedMessage = "Could not find project with externalId: " + project.getExternalId();
+        String expectedMessage = "Project with projectId " + project.getExternalId() + " was not found!";
 
         assertEquals(expectedMessage, exception.getMessage());
     }
@@ -121,16 +123,16 @@ public class ProjectServiceTest extends ProjectFactory {
     }
 
     @Test
-    public void updateProject_whenProjectDoesntExist_expectProjectNotFoundExceptionTest() throws ParseException {
+    public void updateProject_whenProjectDoesntExist_expectIllegalStateExceptionTest() throws ParseException {
         Project project = this.getProject();
         ProjectRequestDto projectRequestDto = this.getProjectRequestDto();
 
         when(projectRepository.findProjectByExternalId(project.getExternalId())).thenReturn(Optional.empty());
 
-        Exception exception = assertThrows(ProjectNotFoundException.class,
+        Exception exception = assertThrows(IllegalStateException.class,
                 () -> projectService.updateProject(project.getExternalId(), projectRequestDto));
 
-        String expectedMessage = "Could not find project with externalId: " + project.getExternalId();
+        String expectedMessage = "Project with id " + project.getExternalId() + " was not found!";
 
         assertEquals(expectedMessage, exception.getMessage());
     }
@@ -145,16 +147,16 @@ public class ProjectServiceTest extends ProjectFactory {
     }
 
     @Test
-    public void deleteProject_whenProjectDoesntExist_expectProjectNotFoundExceptionTest() throws ParseException {
+    public void deleteProject_whenProjectDoesntExist_expectIllegalStateExceptionTest() throws ParseException {
         Project project = this.getProject();
         ProjectRequestDto projectRequestDto = this.getProjectRequestDto();
         projectRequestDto.setExternalId(project.getExternalId());
 
         when(projectRepository.existsProjectByExternalId(project.getExternalId())).thenReturn(false);
 
-        Exception exception = assertThrows(ProjectNotFoundException.class,
+        Exception exception = assertThrows(IllegalStateException.class,
                 () -> projectService.deleteProject(project.getExternalId()));
-        String expectedMessage = "Could not find project with externalId: " + project.getExternalId();
+        String expectedMessage = "Project with id " + project.getExternalId() + " does not exist!";
 
         assertEquals(expectedMessage, exception.getMessage());
     }
