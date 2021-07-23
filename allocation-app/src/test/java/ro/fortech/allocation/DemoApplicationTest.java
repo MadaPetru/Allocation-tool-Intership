@@ -1,9 +1,12 @@
 package ro.fortech.allocation;
 
-import org.springframework.boot.test.context.SpringBootTest;
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@SpringBootTest
+@SpringBootApplication
 public class DemoApplicationTest {
 
-
+    @Test
+    public void contextLoads() {
+    }
 }

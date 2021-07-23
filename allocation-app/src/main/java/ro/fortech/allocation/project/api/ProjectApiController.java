@@ -2,48 +2,48 @@ package ro.fortech.allocation.project.api;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ro.fortech.allocation.project.controller.ProjectApi;
 import ro.fortech.allocation.project.dto.ProjectRequestDto;
 import ro.fortech.allocation.project.dto.ProjectResponseDto;
 import ro.fortech.allocation.project.service.ProjectService;
 import javax.validation.Valid;
-import java.util.List;
 
 @CrossOrigin
 @RestController
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-@RequestMapping(path = "projects")
-public class ProjectApiController {
+public class ProjectApiController implements ProjectApi {
     private  final ProjectService projectService;
 
-    @GetMapping
-    public ResponseEntity<List<ProjectResponseDto>> getProjects(){
-        List<ProjectResponseDto> projectResponsDtos = projectService.getAllProjects();
-        return ResponseEntity.ok(projectResponsDtos);
+    @Override
+    public ResponseEntity<Page<ProjectResponseDto>> getProjects(Pageable pageable) {
+        return ResponseEntity.ok(projectService.getProjects(pageable));
     }
 
-    @GetMapping(path = "{externalId}")
-    private  ResponseEntity<ProjectResponseDto> getProjectById(@PathVariable("externalId") @Valid String externalId) {
-        ProjectResponseDto result = projectService.getProjectById(externalId);
+    @Override
+    public  ResponseEntity<ProjectResponseDto> getProjectByExternalId(@PathVariable("externalId") @Valid String externalId) {
+        ProjectResponseDto result = projectService.getProjectByExternalId(externalId);
         return  ResponseEntity.ok(result);
     }
 
-    @PostMapping
-    private ResponseEntity<ProjectResponseDto> saveUser(@RequestBody @Valid ProjectRequestDto projectRequestDto) {
+    @Override
+    public ResponseEntity<ProjectResponseDto> createProject(@RequestBody @Valid ProjectRequestDto projectRequestDto) {
         ProjectResponseDto result = projectService.createProject(projectRequestDto);
         return ResponseEntity.ok(result);
     }
 
-    @PutMapping(path = "{externalId}")
-    private ResponseEntity<ProjectResponseDto>updateProject(@PathVariable("externalId") @Valid String externalId, @RequestBody @Valid ProjectRequestDto projectRequestDto) {
+    @Override
+    public ResponseEntity<ProjectResponseDto>updateProject(@PathVariable("externalId") @Valid String externalId, @RequestBody @Valid ProjectRequestDto projectRequestDto) {
         ProjectResponseDto result  = projectService.updateProject(externalId,  projectRequestDto);
         return ResponseEntity.ok(result);
     }
 
-    @DeleteMapping(path = "{externalId}")
-    private ResponseEntity<?> deleteProject(@PathVariable("externalId") @Valid String externalId) {
+    @Override
+    public ResponseEntity<?> deleteProject(@PathVariable("externalId") @Valid String externalId) {
         projectService.deleteProject(externalId);
         return new ResponseEntity<>(HttpStatus.OK);
     }

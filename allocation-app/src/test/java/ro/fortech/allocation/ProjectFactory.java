@@ -1,10 +1,8 @@
 package ro.fortech.allocation;
 
-
 import ro.fortech.allocation.project.dto.ProjectRequestDto;
 import ro.fortech.allocation.project.dto.ProjectResponseDto;
 import ro.fortech.allocation.project.service.model.Project;
-
 import java.util.Date;
 
 public class ProjectFactory {
@@ -34,7 +32,7 @@ public class ProjectFactory {
                 .build();
     }
 
-    public ProjectResponseDto getProjectResponseDto() {
+    public ProjectResponseDto getProjectResponseDto()  {
         return ProjectResponseDto.builder()
                 .name("nume")
                 .client("client")

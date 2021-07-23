@@ -3,6 +3,8 @@ package ro.fortech.allocation.project.service;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ro.fortech.allocation.project.dto.ProjectRequestDto;
 import ro.fortech.allocation.project.dto.ProjectResponseDto;
@@ -30,7 +32,7 @@ public class ProjectService {
         return  projectResponseDtos;
     }
 
-    public  ProjectResponseDto getProjectById(String externalId){
+    public  ProjectResponseDto getProjectByExternalId(String externalId){
         Project project = projectRepository.findProjectByExternalId(externalId).orElseThrow(() -> new IllegalStateException("Project with projectId " + externalId + " was not found!"));
         return this.toProjectResponseDto(project);
     }
@@ -62,7 +64,7 @@ public class ProjectService {
     public  void deleteProject(String externalId){
         boolean exists = projectRepository.existsProjectByExternalId(externalId);
         if(!exists) {
-            throw new IllegalStateException("Project with id " + externalId + " does not exists");
+            throw new IllegalStateException("Project with id " + externalId + " does not exist!");
         }
         projectRepository.deleteProjectByExternalId(externalId);
     }
@@ -81,5 +83,10 @@ public class ProjectService {
 
     public  Project ProjectResponseDtoToProject(ProjectResponseDto  projectResponseDto) {
         return modelMapper.map(projectResponseDto, Project.class);
+    }
+
+    public Page<ProjectResponseDto> getProjects(Pageable pageable) {
+        Page projects = projectRepository.findAll(pageable);
+        return projects.map(project -> toProjectResponseDto((Project) project));
     }
 }

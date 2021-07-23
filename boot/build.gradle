@@ -12,13 +12,9 @@ repositories {
 dependencies {
     implementation project(':allocation-api')
     runtime project(':allocation-app')
-
-
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
-
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
 test {
