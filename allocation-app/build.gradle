@@ -19,7 +19,6 @@ jar {
 }
 
 dependencies {
-
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation project(':allocation-api')
 	runtimeOnly 'mysql:mysql-connector-java'
@@ -33,7 +32,6 @@ dependencies {
 	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: '2.5.2'
 	compileOnly group: 'javax.servlet', name: 'javax.servlet-api'
 	testImplementation group: 'com.h2database', name: 'h2', version: '1.4.200'
-
 }
 test {
 	useJUnitPlatform()

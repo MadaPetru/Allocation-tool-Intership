@@ -2,15 +2,20 @@ package ro.fortech.allocation.employees.handler;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.web.config.EnableSpringDataWebSupport;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import ro.fortech.allocation.employees.dto.EmployeeDto;
 import ro.fortech.allocation.employees.exception.EmployeeNotFoundException;
+import ro.fortech.allocation.project.api.ProjectApiController;
+import ro.fortech.allocation.project.service.ProjectService;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
@@ -24,6 +29,7 @@ import static org.junit.Assert.*;
 public class ApiExceptionHandlerTest {
     @Autowired
     private LocalValidatorFactoryBean validator;
+
     private final ApiExceptionHandler exceptionHandler = new ApiExceptionHandler();
 
     @Test
