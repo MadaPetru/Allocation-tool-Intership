@@ -1,4 +1,4 @@
 package ro.fortech.allocation;
 
-public class DemoClassTest {
+public class DemoAppClass {
 }

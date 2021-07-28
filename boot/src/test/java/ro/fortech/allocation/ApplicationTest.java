@@ -1,35 +1,50 @@
 package ro.fortech.allocation;
 
-import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.text.ParseException;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class ApplicationTest {
 
     @Autowired
-    private TestRestTemplate restTemplate;
+    private WebApplicationContext context;
 
-    @LocalServerPort
-    int randomServerPort;
+    private MockMvc mockMvc;
+
+    @Before
+    public void setUp() {
+        mockMvc = MockMvcBuilders
+                .webAppContextSetup(context)
+                .apply(SecurityMockMvcConfigurers.springSecurity())
+                .build();
+    }
 
     @Test
-    public void testApplication() throws URISyntaxException, ParseException {
-        final String baseUrl = "http://localhost:" + randomServerPort + "/employees/";
-        URI createUri = new URI(baseUrl);
-        ResponseEntity<String> result = this.restTemplate.getForEntity(createUri, String.class);
+    @WithMockUser(value = "user")
+    public void testApplication_expectStatusOk() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/employees")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
 
-        Assert.assertEquals(200, result.getStatusCodeValue());
+    @Test
+    public void testApplication_expectUnauthorized() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/employees")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized());
     }
 }

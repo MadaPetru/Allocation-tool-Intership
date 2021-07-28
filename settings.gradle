@@ -1,6 +1,8 @@
 rootProject.name = 'allocation-backend'
 
+include 'boot'
 include 'allocation-app'
 include 'allocation-api'
-include 'boot'
+include 'security-api'
+include 'security-app'
 

@@ -27,9 +27,7 @@ import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ProjectServiceTest {
-    @InjectMocks;
-
-
+    @InjectMocks
     private ProjectService projectService;
 
     @Mock
