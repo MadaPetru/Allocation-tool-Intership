@@ -21,15 +21,16 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import ro.fortech.allocation.ProjectFactory;
+import ro.fortech.allocation.assignments.dto.ProjectAssignmentDto;
+import ro.fortech.allocation.project.dto.ProjectAssignmentsDto;
 import ro.fortech.allocation.project.dto.ProjectRequestDto;
 import ro.fortech.allocation.project.dto.ProjectResponseDto;
 import ro.fortech.allocation.project.service.ProjectService;
 
 import javax.validation.ConstraintViolation;
 import java.text.ParseException;
-import java.util.Collections;
-import java.util.Set;
-import java.util.TimeZone;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -97,6 +98,38 @@ public class ProjectApiControllerTest {
         constraintViolationSet = validator.validateProperty(nonValidProjectRequestDto, "endDate");
         Assertions.assertEquals(1, constraintViolationSet.size());
         Assertions.assertEquals("must not be null", constraintViolationSet.iterator().next().getMessage());
+    }
+
+    @Test
+    public void getAssignmentsOfAProject_givenExternalId_expectAssignments() throws Exception {
+        ProjectAssignmentDto assignmentDto = ProjectAssignmentDto.builder()
+                .uid("a")
+                .employeeName("Employee")
+                .employeeUid("e")
+                .startDate(new SimpleDateFormat("yyyy-MM-dd").parse("2020-05-10"))
+                .endDate(new SimpleDateFormat("yyyy-MM-dd").parse("2020-05-10"))
+                .projectPosition("position")
+                .allocationHours(8)
+                .build();
+
+        List<ProjectAssignmentDto> assignmentDtos = new ArrayList<>();
+        assignmentDtos.add(assignmentDto);
+
+        ProjectAssignmentsDto projectAssignmentsDto = ProjectAssignmentsDto.builder()
+                .projectExternalId("externalId")
+                .projectName("name")
+                .assignments(assignmentDtos)
+                .build();
+
+        Mockito.when(
+                projectService.getAssignmentsOfAProject("externalId")).thenReturn(projectAssignmentsDto);
+
+
+        mockMvc.perform(get(PROJECTS_URL + "/externalId/assignments")
+                .content(objectMapper.writeValueAsString(projectAssignmentsDto))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.projectName").value("name"));
     }
 
     @Test

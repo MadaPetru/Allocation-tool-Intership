@@ -3,9 +3,11 @@ package ro.fortech.allocation.project.model;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.*;
+import ro.fortech.allocation.assignments.model.Assignment;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -44,5 +46,8 @@ public class Project {
 
     @Column(unique = true, name = "external_id", updatable = false)
     private String externalId;
+
+    @OneToMany(mappedBy = "project")
+    Set<Assignment> assignments;
 }
 

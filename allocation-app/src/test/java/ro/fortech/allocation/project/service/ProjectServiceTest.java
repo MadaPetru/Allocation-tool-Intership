@@ -11,6 +11,11 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import ro.fortech.allocation.ProjectFactory;
+import ro.fortech.allocation.assignments.dto.ProjectAssignmentDto;
+import ro.fortech.allocation.assignments.model.Assignment;
+import ro.fortech.allocation.assignments.repository.AssignmentRepository;
+import ro.fortech.allocation.employees.model.Employee;
+import ro.fortech.allocation.project.dto.ProjectAssignmentsDto;
 import ro.fortech.allocation.project.dto.ProjectRequestDto;
 import ro.fortech.allocation.project.dto.ProjectResponseDto;
 import ro.fortech.allocation.project.exception.ProjectNotFoundException;
@@ -18,8 +23,8 @@ import ro.fortech.allocation.project.model.Project;
 import ro.fortech.allocation.project.repository.ProjectRepository;
 
 import java.text.ParseException;
-import java.util.Collections;
-import java.util.Optional;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -32,6 +37,9 @@ public class ProjectServiceTest {
 
     @Mock
     private ProjectRepository projectRepository;
+
+    @Mock
+    private AssignmentRepository assignmentRepository;
 
     @Mock
     private ModelMapper mapper;
@@ -72,6 +80,57 @@ public class ProjectServiceTest {
         assertEquals(expectedMessage, exception.getMessage());
     }
 
+    @Test
+    public void getAssignmentsOfProject_givenExternalId_expectAssignments() throws ParseException {
+        Project project = ProjectFactory.getProject();
+
+        when(projectRepository.findProjectByExternalId(project.getExternalId())).thenReturn(Optional.of(project));
+
+        Assignment assignment = Assignment.builder()
+                .employee(Employee.builder()
+                        .uid("22")
+                        .email("adsa@yahoo.com")
+                        .name("aaa")
+                        .active(true)
+                        .internalPosition("aaaa")
+                        .startDate(new SimpleDateFormat("yyyy-MM-dd").parse("2020-05-10"))
+                        .endDate(new SimpleDateFormat("yyyy-MM-dd").parse("2020-06-10"))
+                        .build())
+                .project(ProjectFactory.getProject())
+                .startDate(new SimpleDateFormat("yyyy-MM-dd").parse("2020-05-10"))
+                .endDate(new SimpleDateFormat("yyyy-MM-dd").parse("2020-06-10"))
+                .projectPosition(".net")
+                .allocationHours(8)
+                .build();
+
+        Set<Assignment> projectAssignment = new HashSet<>();
+        projectAssignment.add(assignment);
+
+        when(assignmentRepository.findAssignmentByProject(project.getId())).thenReturn(projectAssignment);
+
+        ProjectAssignmentsDto result = new ProjectAssignmentsDto();
+        result.setProjectName(project.getName());
+        result.setProjectExternalId(project.getExternalId());
+        List<ProjectAssignmentDto> assignmentDtoList = new ArrayList<>();
+        for (Assignment a : projectAssignment) {
+
+            ProjectAssignmentDto temp = new ProjectAssignmentDto(
+                    a.getUid(),
+                    a.getEmployee().getName(),
+                    a.getEmployee().getUid(),
+                    a.getStartDate(),
+                    a.getEndDate(),
+                    a.getProjectPosition(),
+                    a.getAllocationHours());
+            assignmentDtoList.add(temp);
+        }
+        result.setAssignments(assignmentDtoList);
+
+        ProjectAssignmentsDto actualResponse = projectService.getAssignmentsOfAProject(project.getExternalId());
+
+        assertEquals(result.getAssignments().size(), actualResponse.getAssignments().size());
+        assertEquals(result.getProjectName(), actualResponse.getProjectName());
+    }
 
     @Test
     public void createProject_givenProjectDto_expectTheCreatedProject() throws ParseException {

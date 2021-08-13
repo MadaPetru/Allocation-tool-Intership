@@ -1,7 +1,7 @@
 package ro.fortech.allocation.employees.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
@@ -20,22 +20,20 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import ro.fortech.allocation.employees.dto.EmployeeDto;
+import ro.fortech.allocation.employees.dto.EmployeeEmailDto;
 import ro.fortech.allocation.employees.service.EmployeeService;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-
+import javax.validation.ConstraintViolation;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Collections;
-import java.util.Set;
-import java.util.TimeZone;
-import javax.validation.ConstraintViolation;
+import java.util.*;
 
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -73,6 +71,27 @@ public class EmployeeControllerTest {
                 .andExpect(status().isOk());
 
         verify(employeeService).findAll(Mockito.any(Pageable.class));
+
+    }
+
+    @Test
+    public void findEmployeesByEmail_givenEmail_expectTheEmployees() throws Exception {
+        EmployeeEmailDto employeeEmailDto = EmployeeEmailDto.builder()
+                .uid("22")
+                .email("adsa@yahoo.com")
+                .build();
+
+        List<EmployeeEmailDto> employeeEmailDtoList = new ArrayList<>();
+        employeeEmailDtoList.add(employeeEmailDto);
+
+        Mockito.when(
+                employeeService.findEmployeeByEmail("adsa")).thenReturn(employeeEmailDtoList);
+
+        mockMvc.perform(get("/employees/search").param("email", "adsa"))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].email").value("adsa@yahoo.com"));
+
+        verify(employeeService, times(1)).findEmployeeByEmail("adsa");
 
     }
 

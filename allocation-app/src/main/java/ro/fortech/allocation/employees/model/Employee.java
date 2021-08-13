@@ -1,18 +1,18 @@
 package ro.fortech.allocation.employees.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import ro.fortech.allocation.assignments.model.Assignment;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.Set;
 
-@Data
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
+@Entity(name = "Employee")
 public class Employee {
     @Id
     @GeneratedValue
@@ -22,7 +22,7 @@ public class Employee {
     private String uid;
     @Column(nullable = false)
     private String name;
-    @Column(nullable = false)
+    @Column(nullable = false, name = "email")
     private String email;
     @Column(nullable = false)
     private String internalPosition;
@@ -42,4 +42,6 @@ public class Employee {
     private Date startDate;
     @Column(nullable = false)
     private Date endDate;
+    @OneToMany(mappedBy = "employee")
+    Set<Assignment> assignments;
 }

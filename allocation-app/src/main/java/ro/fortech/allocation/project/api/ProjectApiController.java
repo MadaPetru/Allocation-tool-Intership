@@ -10,12 +10,15 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import ro.fortech.allocation.project.controller.ProjectApi;
+import ro.fortech.allocation.project.dto.ProjectAssignmentsDto;
 import ro.fortech.allocation.project.dto.ProjectRequestDto;
 import ro.fortech.allocation.project.dto.ProjectResponseDto;
 import ro.fortech.allocation.project.service.ProjectService;
 
 import javax.validation.Valid;
+import java.io.IOException;
 
 @CrossOrigin
 @RestController
@@ -26,6 +29,11 @@ public class ProjectApiController implements ProjectApi {
     @Override
     public ResponseEntity<Page<ProjectResponseDto>> getProjects(Pageable pageable) {
         return ResponseEntity.ok(projectService.getProjects(pageable));
+    }
+
+    @Override
+    public ProjectAssignmentsDto getProjectAssignments(@PathVariable("externalId") @Valid String externalId) {
+        return projectService.getAssignmentsOfAProject(externalId);
     }
 
     @Override
@@ -48,6 +56,11 @@ public class ProjectApiController implements ProjectApi {
     @Override
     public ResponseEntity<?> deleteProject(@PathVariable("externalId") @Valid String externalId) {
         projectService.deleteProject(externalId);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+    @Override
+    public ResponseEntity<?> uploadFile(MultipartFile file) throws IOException {
+        projectService.save(file);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

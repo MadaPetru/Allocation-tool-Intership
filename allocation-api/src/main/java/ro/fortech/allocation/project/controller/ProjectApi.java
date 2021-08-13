@@ -9,11 +9,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import ro.fortech.allocation.project.dto.ProjectAssignmentsDto;
 import ro.fortech.allocation.project.dto.ProjectRequestDto;
 import ro.fortech.allocation.project.dto.ProjectResponseDto;
 
+import java.io.IOException;
+
 @RequestMapping("/projects")
 public interface ProjectApi {
+
     @ResponseStatus(code = HttpStatus.OK)
     @ApiOperation(value = "Get all projects")
     @ApiResponses(value = {
@@ -60,4 +65,21 @@ public interface ProjectApi {
     })
     @DeleteMapping(path = "/{externalId}")
     ResponseEntity<?> deleteProject(@PathVariable String externalId);
+
+    @ResponseStatus(code = HttpStatus.OK)
+    @ApiOperation(value = "Get projects assignments")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success")
+    })
+    @GetMapping(path = "/{externalId}/assignments")
+    ProjectAssignmentsDto getProjectAssignments(@PathVariable("externalId") String externalId);
+
+    @ResponseStatus(code = HttpStatus.OK)
+    @PostMapping(path = "/upload")
+    @ApiOperation(value = "Save projects from CSV file")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully saved projects"),
+            @ApiResponse(code = 400, message = "Bad request")
+    })
+    ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file) throws IOException;
 }
