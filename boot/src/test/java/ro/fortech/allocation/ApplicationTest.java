@@ -34,7 +34,7 @@ public class ApplicationTest {
     }
 
     @Test
-    @WithMockUser(value = "user")
+    @WithMockUser()
     public void testApplication_expectStatusOk() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/employees")
                         .contentType(MediaType.APPLICATION_JSON))

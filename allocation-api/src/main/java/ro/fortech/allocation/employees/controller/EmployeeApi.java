@@ -1,19 +1,16 @@
 package ro.fortech.allocation.employees.controller;
 
+import io.swagger.annotations.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
 import org.springframework.web.bind.annotation.*;
 import ro.fortech.allocation.employees.dto.EmployeeDto;
 
 @RequestMapping("/employees")
 public interface EmployeeApi {
-
 
     @ResponseStatus(code = HttpStatus.OK)
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)

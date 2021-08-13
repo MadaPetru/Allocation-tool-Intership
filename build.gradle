@@ -39,6 +39,7 @@ subprojects {
         testImplementation group: 'junit', name: 'junit', version: '4.13.2'
         testImplementation group: 'org.junit.vintage', name: 'junit-vintage-engine', version: '5.7.2'
         implementation group: 'org.modelmapper', name: 'modelmapper', version: '2.4.4'
-//        implementation 'org.springframework.boot:spring-boot-starter-validation'
+        implementation group: 'io.springfox', name: 'springfox-swagger2', version: '2.9.2'
+        implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: '2.9.2'
     }
 }

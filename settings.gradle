@@ -5,4 +5,3 @@ include 'allocation-app'
 include 'allocation-api'
 include 'security-api'
 include 'security-app'
-

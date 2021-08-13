@@ -15,15 +15,16 @@ dependencies {
 
     runtime project(':security-app')
     runtime project(':allocation-app')
-
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
     runtimeOnly 'mysql:mysql-connector-java'
+
     testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-security', version: '2.5.2'
     testImplementation group: 'org.springframework.security', name: 'spring-security-test'
+
 
 }
 

@@ -17,7 +17,14 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
+
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+    private static final String[] PUBLIC_URLS = {
+            "/v2/api-docs",
+            "/swagger-resources/**",
+            "/swagger-ui.html/**",
+            "/webjars/**"
+    };
 
     private final UserDetailsService userDetailService;
     private final AuthenticationEntryPointJwt unauthorizedHandler;
@@ -38,6 +45,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests()
                 .antMatchers("/auth/**").permitAll()
+                .antMatchers(PUBLIC_URLS).permitAll()
                 .antMatchers("/users/**").hasAnyAuthority("MANAGER", "ADMINISTRATOR")
                 .anyRequest()
                 .authenticated();
