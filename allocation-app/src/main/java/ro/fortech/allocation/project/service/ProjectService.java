@@ -11,11 +11,11 @@ import ro.fortech.allocation.assignments.dto.ProjectAssignmentDto;
 import ro.fortech.allocation.assignments.model.Assignment;
 import ro.fortech.allocation.assignments.repository.AssignmentRepository;
 import ro.fortech.allocation.employees.exception.CsvParseException;
-import ro.fortech.allocation.project.helper.CsvHelper;
 import ro.fortech.allocation.project.dto.ProjectAssignmentsDto;
 import ro.fortech.allocation.project.dto.ProjectRequestDto;
 import ro.fortech.allocation.project.dto.ProjectResponseDto;
 import ro.fortech.allocation.project.exception.ProjectNotFoundException;
+import ro.fortech.allocation.project.helper.CsvHelper;
 import ro.fortech.allocation.project.model.Project;
 import ro.fortech.allocation.project.repository.ProjectRepository;
 import ro.fortech.allocation.technology.dto.TechnologyDto;
@@ -72,7 +72,10 @@ public class ProjectService {
     }
 
     public void deleteProject(String externalId) {
-        projectRepository.delete(projectRepository.findProjectByExternalId(externalId).orElseThrow(() -> new ProjectNotFoundException(externalId)));
+        Project project = projectRepository.findProjectByExternalId(externalId).orElseThrow(() -> new ProjectNotFoundException(externalId));
+        assignmentRepository.deleteAll(assignmentRepository.findAssignmentsByProject(project));
+
+        projectRepository.delete(project);
     }
 
     public ProjectAssignmentsDto getAssignmentsOfAProject(String externalId) {

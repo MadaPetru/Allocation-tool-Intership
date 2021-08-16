@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import ro.fortech.allocation.assignments.repository.AssignmentRepository;
 import ro.fortech.allocation.employees.dto.EmployeeDto;
 import ro.fortech.allocation.employees.exception.EmployeeNotFoundException;
 import ro.fortech.allocation.employees.model.Employee;
@@ -34,6 +35,9 @@ public class EmployeeServiceTest {
 
     @Mock
     private TechnologyRepository technologyRepository;
+
+    @Mock
+    private AssignmentRepository assignmentRepository;
 
     @Test
     public void save_givenEmployee_expectTheEmployee() throws ParseException {
@@ -178,6 +182,7 @@ public class EmployeeServiceTest {
                 .endDate(new SimpleDateFormat("yyyy-MM-dd").parse("2020-06-10"))
                 .build();
         when(employeeRepository.findEmployeeByUid(anyString())).thenReturn(Optional.of(employee));
+        when(assignmentRepository.findAssignmentsByEmployee(employee)).thenReturn(new ArrayList<>());
 
         employeeService.deleteByUid(employee.getUid());
         verify(employeeRepository).delete(employee);

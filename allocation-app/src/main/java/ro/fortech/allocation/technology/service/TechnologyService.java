@@ -6,6 +6,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
+import ro.fortech.allocation.assignments.repository.AssignmentRepository;
+import ro.fortech.allocation.employees.model.Employee;
+import ro.fortech.allocation.employees.repository.EmployeeRepository;
+import ro.fortech.allocation.project.model.Project;
+import ro.fortech.allocation.project.repository.ProjectRepository;
 import ro.fortech.allocation.technology.dto.TechnologyDto;
 import ro.fortech.allocation.technology.exception.TechnologyAlreadyExistsInTheDatabase;
 import ro.fortech.allocation.technology.exception.TechnologyNotFoundByExternalIdException;
@@ -23,6 +28,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class TechnologyService {
     private final TechnologyRepository repository;
+    private final EmployeeRepository employeeRepository;
+    private final ProjectRepository projectRepository;
+    private final AssignmentRepository assignmentRepository;
 
     public TechnologyDto add(@Valid TechnologyDto dto) {
         String convertedName = dto.getName().toLowerCase().trim().replaceAll(" +"," ");
@@ -60,7 +68,16 @@ public class TechnologyService {
 
     public boolean deleteByExternalId(String externalId) {
         Technology technology = repository.findByExternalId(externalId).orElseThrow(() -> new TechnologyNotFoundByExternalIdException(externalId));
+
+        List<Employee> employees = getEmployeesWithTechnology(externalId);
+        List<Project> projects = getProjectsWithTechnology(externalId);
+
+        deleteAllAssignmentsWithProjectsOrEmployees(employees, projects);
+        employeeRepository.deleteAll(employees);
+        projectRepository.deleteAll(projects);
+
         repository.delete(technology);
+
         return true;
     }
 
@@ -84,5 +101,27 @@ public class TechnologyService {
         technology.setExternalId(dto.getExternalId());
         technology.setName(dto.getName());
         return technology;
+    }
+
+    private List<Project> getProjectsWithTechnology(String externalId) {
+        return projectRepository.findAll()
+                .stream().filter(e -> e.getTechnologies().stream().map(Technology::getExternalId).collect(Collectors.toList())
+                        .contains(externalId)).collect(Collectors.toList());
+    }
+
+    private List<Employee> getEmployeesWithTechnology(String externalId) {
+        return employeeRepository.findAll()
+                .stream().filter(e -> e.getTechnologies().stream().map(Technology::getExternalId).collect(Collectors.toList())
+                        .contains(externalId)).collect(Collectors.toList());
+    }
+
+    private void deleteAllAssignmentsWithProjectsOrEmployees(List<Employee> employees, List<Project> projects) {
+        for (Employee employee: employees){
+            assignmentRepository.deleteAll(assignmentRepository.findAssignmentsByEmployee(employee));
+        }
+
+        for (Project project: projects){
+            assignmentRepository.deleteAll(assignmentRepository.findAssignmentsByProject(project));
+        }
     }
 }

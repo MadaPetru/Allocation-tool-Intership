@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.multipart.MultipartFile;
+import ro.fortech.allocation.assignments.repository.AssignmentRepository;
 import ro.fortech.allocation.employees.dto.EmployeeDto;
 import ro.fortech.allocation.employees.dto.EmployeeEmailDto;
 import ro.fortech.allocation.employees.exception.CsvParseException;
@@ -32,6 +33,7 @@ import java.util.stream.Collectors;
 public class EmployeeService {
     private final EmployeeRepository employeeRepository;
     private final TechnologyRepository technologyRepository;
+    private final AssignmentRepository assignmentRepository;
 
     public EmployeeDto save(@Valid EmployeeDto employeeDto) {
         employeeDto.setUid(UUID.randomUUID().toString());
@@ -60,7 +62,11 @@ public class EmployeeService {
     }
 
     public void deleteByUid(String uid) {
-        employeeRepository.delete(employeeRepository.findEmployeeByUid(uid).orElseThrow(() -> new EmployeeNotFoundException(uid)));
+
+        Employee employee = employeeRepository.findEmployeeByUid(uid).orElseThrow(() -> new EmployeeNotFoundException(uid));
+        assignmentRepository.deleteAll(assignmentRepository.findAssignmentsByEmployee(employee));
+
+        employeeRepository.delete(employee);
     }
 
     public List<EmployeeEmailDto> findEmployeeByEmail(String email) {

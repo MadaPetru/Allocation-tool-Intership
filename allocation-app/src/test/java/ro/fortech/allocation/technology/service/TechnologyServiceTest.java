@@ -9,22 +9,21 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import ro.fortech.allocation.assignments.repository.AssignmentRepository;
+import ro.fortech.allocation.employees.repository.EmployeeRepository;
+import ro.fortech.allocation.project.repository.ProjectRepository;
 import ro.fortech.allocation.technology.dto.TechnologyDto;
 import ro.fortech.allocation.technology.exception.TechnologyAlreadyExistsInTheDatabase;
 import ro.fortech.allocation.technology.exception.TechnologyNotFoundByExternalIdException;
 import ro.fortech.allocation.technology.model.Technology;
 import ro.fortech.allocation.technology.repository.TechnologyRepository;
 
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TechnologyServiceTest {
@@ -33,6 +32,12 @@ public class TechnologyServiceTest {
 
     @Mock
     TechnologyRepository repository;
+
+    @Mock
+    EmployeeRepository employeeRepository;
+
+    @Mock
+    ProjectRepository projectRepository;
 
     @Test
     public void findTechnologiesByName_givenName_expectTechnologies(){
@@ -97,8 +102,8 @@ public class TechnologyServiceTest {
                 .externalId("externalId")
                 .build();
         when(repository.findByExternalId(any(String.class))).thenReturn(java.util.Optional.ofNullable(tech));
-        //when(repository.findByName(any(String.class))).thenReturn();
         when(repository.save(any(Technology.class))).thenReturn(tech);
+
         TechnologyDto updatedTech = service.update(dto,dto.getExternalId());
         verify(repository).save(any(Technology.class));
         assertThat(updatedTech.getName()).isEqualTo(dto.getName());
@@ -132,7 +137,11 @@ public class TechnologyServiceTest {
                 .name("tech")
                 .externalId("externalId")
                 .build();
+
         when(repository.findByExternalId(tech.getExternalId())).thenReturn(java.util.Optional.of(tech));
+        when(employeeRepository.findAll()).thenReturn(new ArrayList<>());
+        when(projectRepository.findAll()).thenReturn(new ArrayList<>());
+
         Boolean expected = service.deleteByExternalId(dto.getExternalId());
         verify(repository).delete(tech);
         assertEquals(true,expected);
