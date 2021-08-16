@@ -16,16 +16,16 @@ import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import java.util.Set;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringRunner.class)
 @AutoConfigureMockMvc
 @SpringBootTest
 public class ApiExceptionHandlerTest {
+    private final ApiExceptionHandler exceptionHandler = new ApiExceptionHandler();
+
     @Autowired
     private LocalValidatorFactoryBean validator;
-
-    private final ApiExceptionHandler exceptionHandler = new ApiExceptionHandler();
 
     @Test
     public void handleConstraintViolationException_givenConstraintViolation_expectBadRequestStatus() {

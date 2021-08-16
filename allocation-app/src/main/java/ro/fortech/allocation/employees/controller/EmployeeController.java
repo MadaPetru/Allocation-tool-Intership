@@ -27,7 +27,6 @@ public class EmployeeController implements EmployeeApi {
 
     @Override
     public ResponseEntity<Page<EmployeeDto>> findAllEmployees(Pageable pageable) {
-
         return new ResponseEntity<>(employeeService.findAll(pageable), HttpStatus.OK);
     }
 
@@ -51,7 +50,6 @@ public class EmployeeController implements EmployeeApi {
         employeeService.deleteByUid(employeeUid);
         return new ResponseEntity<>(HttpStatus.OK);
     }
-
 
     @Override
     public ResponseEntity<EmployeeDto> editEmployee(EmployeeDto employeeDto, String employeeUid) {

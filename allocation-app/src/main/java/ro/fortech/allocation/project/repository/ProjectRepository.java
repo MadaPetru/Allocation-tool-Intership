@@ -9,8 +9,6 @@ import java.util.Optional;
 @Repository
 public interface ProjectRepository extends JpaRepository<Project, Long> {
     Optional<Project> findProjectByExternalId(String externalId);
-
     void deleteProjectByExternalId(String externalId);
-
     boolean existsProjectByExternalId(String externalId);
 }

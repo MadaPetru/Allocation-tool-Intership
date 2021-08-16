@@ -38,15 +38,18 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @EnableSpringDataWebSupport
 public class AssignmentControllerTest {
 
+    private final ObjectMapper mapper = new ObjectMapper();
+
     @MockBean
     private AssignmentService assignmentService;
+
     @Autowired
     private MockMvc mockMvc;
 
     @Autowired
     private LocalValidatorFactoryBean validator;
 
-    private final ObjectMapper mapper = new ObjectMapper();
+
 
     @Before
     public void setup() {

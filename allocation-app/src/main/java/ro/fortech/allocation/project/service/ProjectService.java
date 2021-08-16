@@ -18,12 +18,16 @@ import ro.fortech.allocation.project.dto.ProjectResponseDto;
 import ro.fortech.allocation.project.exception.ProjectNotFoundException;
 import ro.fortech.allocation.project.model.Project;
 import ro.fortech.allocation.project.repository.ProjectRepository;
+import ro.fortech.allocation.technology.dto.TechnologyDto;
+import ro.fortech.allocation.technology.exception.TechnologyNotFoundByExternalIdException;
+import ro.fortech.allocation.technology.repository.TechnologyRepository;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -32,6 +36,7 @@ public class ProjectService {
     private final ModelMapper modelMapper;
     private final ProjectRepository projectRepository;
     private final AssignmentRepository assignmentRepository;
+    private final TechnologyRepository technologyRepository;
 
     public Page<ProjectResponseDto> getProjects(Pageable pageable) {
         return projectRepository.findAll(pageable).map(this::toProjectResponseDto);
@@ -58,15 +63,12 @@ public class ProjectService {
     public ProjectResponseDto updateProject(String externalId, ProjectRequestDto projectToUpdate) {
         Project project = projectRepository.findProjectByExternalId(externalId).orElseThrow(() -> new ProjectNotFoundException(externalId));
 
-        project.setName(projectToUpdate.getName());
-        project.setClient(projectToUpdate.getClient());
-        project.setStartDate(projectToUpdate.getStartDate());
-        project.setEndDate(projectToUpdate.getEndDate());
-        project.setDescription(projectToUpdate.getDescription());
-        project.setTechnicalStack(projectToUpdate.getTechnicalStack());
-
-        projectRepository.save(project);
-        return toProjectResponseDto(project);
+        Project newProject = projectRequestDtoToProject(projectToUpdate);
+        newProject.setId(project.getId());
+        if(newProject.getExternalId()==null)
+            newProject.setExternalId(project.getExternalId());
+        projectRepository.save(newProject);
+        return toProjectResponseDto(newProject);
     }
 
     public void deleteProject(String externalId) {
@@ -100,10 +102,14 @@ public class ProjectService {
     }
 
     private ProjectResponseDto toProjectResponseDto(Project project) {
-        return modelMapper.map(project, ProjectResponseDto.class);
+        ProjectResponseDto result =  modelMapper.map(project, ProjectResponseDto.class);
+        result.setTechnologyDtos(project.getTechnologies().stream().map(e->modelMapper.map(e, TechnologyDto.class)).collect(Collectors.toSet()));
+        return result;
     }
 
     private Project projectRequestDtoToProject(ProjectRequestDto projectRequestDto) {
-        return modelMapper.map(projectRequestDto, Project.class);
+        Project project =  modelMapper.map(projectRequestDto, Project.class);
+        project.setTechnologies(projectRequestDto.getTechnologyDtos().stream().map(e->technologyRepository.findByExternalId(e.getExternalId()).orElseThrow(()->new TechnologyNotFoundByExternalIdException(e.getExternalId()))).collect(Collectors.toSet()));
+        return project;
     }
 }

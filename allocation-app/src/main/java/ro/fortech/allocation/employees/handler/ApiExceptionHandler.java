@@ -15,7 +15,6 @@ import javax.validation.ConstraintViolationException;
 @ControllerAdvice
 @EnableWebMvc
 public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
-
     @ExceptionHandler(value = {ConstraintViolationException.class})
     protected ResponseEntity<Object> handleConstraintViolationException(ConstraintViolationException ex) {
         return new ResponseEntity<>(
@@ -34,5 +33,4 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(
                 ex.getMessage(), new HttpHeaders(), HttpStatus.NOT_FOUND);
     }
-
 }

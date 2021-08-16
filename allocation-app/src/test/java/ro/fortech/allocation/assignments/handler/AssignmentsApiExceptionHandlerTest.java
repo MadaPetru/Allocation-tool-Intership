@@ -26,10 +26,12 @@ import static org.junit.Assert.*;
 @SpringBootTest
 public class AssignmentsApiExceptionHandlerTest {
 
+    private final AssignmentsApiExceptionHandler exceptionHandler = new AssignmentsApiExceptionHandler();
+
     @Autowired
     private LocalValidatorFactoryBean validator;
 
-    private final AssignmentsApiExceptionHandler exceptionHandler = new AssignmentsApiExceptionHandler();
+
 
 
     @Test

@@ -13,6 +13,7 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.util.Date;
+import java.util.Set;
 
 @Data
 @Builder
@@ -53,4 +54,5 @@ public class EmployeeDto {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private Date endDate;
 
+    private Set<String> technologies;
 }

@@ -3,9 +3,13 @@ package ro.fortech.allocation;
 import ro.fortech.allocation.project.dto.ProjectRequestDto;
 import ro.fortech.allocation.project.dto.ProjectResponseDto;
 import ro.fortech.allocation.project.model.Project;
+import ro.fortech.allocation.technology.dto.TechnologyDto;
+import ro.fortech.allocation.technology.model.Technology;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.HashSet;
+import java.util.Set;
 
 public class ProjectFactory {
     public static Project getProject() throws ParseException {
@@ -15,8 +19,8 @@ public class ProjectFactory {
                 .startDate(new SimpleDateFormat("yyyy-MM-dd").parse("2020-05-10"))
                 .endDate(new SimpleDateFormat("yyyy-MM-dd").parse("2020-05-10"))
                 .description("good project")
-                .technicalStack(".net")
                 .externalId("AAA1122")
+                .technologies(getSetTechnology())
                 .build();
     }
 
@@ -27,7 +31,7 @@ public class ProjectFactory {
                 .startDate(new SimpleDateFormat("yyyy-MM-dd").parse("2020-05-10"))
                 .endDate(new SimpleDateFormat("yyyy-MM-dd").parse("2020-05-10"))
                 .description("good project")
-                .technicalStack(".net")
+                .technologyDtos(getSetTechnologyDto())
                 .externalId("AAA1122")
                 .build();
     }
@@ -39,12 +43,12 @@ public class ProjectFactory {
                 .startDate(new SimpleDateFormat("yyyy-MM-dd").parse("2020-05-10"))
                 .endDate(new SimpleDateFormat("yyyy-MM-dd").parse("2020-05-10"))
                 .description("good project")
-                .technicalStack(".net")
+                .technologyDtos(getSetTechnologyDto())
                 .externalId("AAA1122")
                 .build();
     }
 
-    public static ProjectRequestDto getInvalidProjectRequestDto() throws ParseException {
+    public static ProjectRequestDto getInvalidProjectRequestDto() {
         return ProjectRequestDto.builder()
                 .name("n")
                 .client("")
@@ -53,4 +57,31 @@ public class ProjectFactory {
                 .externalId("AAA1122")
                 .build();
     }
+    public static Set<TechnologyDto> getSetTechnologyDto(){
+        Technology technology = new Technology();
+        technology.setName("name");
+        technology.setExternalId("externalId");
+        TechnologyDto technologyDto = new TechnologyDto();
+        technologyDto.setName("name");
+        technologyDto.setExternalId("externalId");
+        Set<Technology> technologySet = new HashSet<>();
+        technologySet.add(technology);
+        Set<TechnologyDto> technologySetDto = new HashSet<>();
+        technologySetDto.add(technologyDto);
+        return technologySetDto;
+    }
+    public static Set<Technology> getSetTechnology(){
+        Technology technology = new Technology();
+        technology.setName("name");
+        technology.setExternalId("externalId");
+        TechnologyDto technologyDto = new TechnologyDto();
+        technologyDto.setName("name");
+        technologyDto.setExternalId("externalId");
+        Set<Technology> technologySet = new HashSet<>();
+        technologySet.add(technology);
+        Set<TechnologyDto> technologySetDto = new HashSet<>();
+        technologySetDto.add(technologyDto);
+        return technologySet;
+    }
+
 }

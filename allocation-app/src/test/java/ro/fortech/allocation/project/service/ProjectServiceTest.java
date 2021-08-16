@@ -21,6 +21,9 @@ import ro.fortech.allocation.project.dto.ProjectResponseDto;
 import ro.fortech.allocation.project.exception.ProjectNotFoundException;
 import ro.fortech.allocation.project.model.Project;
 import ro.fortech.allocation.project.repository.ProjectRepository;
+import ro.fortech.allocation.technology.dto.TechnologyDto;
+import ro.fortech.allocation.technology.model.Technology;
+import ro.fortech.allocation.technology.repository.TechnologyRepository;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -42,13 +45,25 @@ public class ProjectServiceTest {
     private AssignmentRepository assignmentRepository;
 
     @Mock
+    private TechnologyRepository technologyRepository;
+
+    @Mock
     private ModelMapper mapper;
 
     @Test
     public void getProjects_givenProjects_expectTheProjects() throws ParseException {
+        Project project = ProjectFactory.getProject();
+        ProjectResponseDto projectResponseDto = ProjectFactory.getProjectResponseDto();
+        Technology technology = new Technology();
+        technology.setName("name");
+        technology.setExternalId("externalId");
+        TechnologyDto technologyDto = new TechnologyDto();
+        technologyDto.setName("name");
+        technologyDto.setExternalId("externalId");
         Pageable pageable = PageRequest.of(0, 10);
-        Page<Project> page = new PageImpl<>(Collections.singletonList(ProjectFactory.getProject()));
+        Page<Project> page = new PageImpl<>(Collections.singletonList(project));
         when(projectRepository.findAll(pageable)).thenReturn(page);
+        when(mapper.map(project, ProjectResponseDto.class)).thenReturn(projectResponseDto);
 
         Page<ProjectResponseDto> projectsPage = projectService.getProjects(pageable);
         assertEquals(1, projectsPage.getTotalElements());
@@ -58,7 +73,13 @@ public class ProjectServiceTest {
     public void getProjectByExternalId_givenExternalId_expectTheProject() throws ParseException {
         ProjectResponseDto projectResponseDto = ProjectFactory.getProjectResponseDto();
         Project project = ProjectFactory.getProject();
-        project.setExternalId(projectResponseDto.getExternalId());
+
+        Technology technology = new Technology();
+        technology.setName("name");
+        technology.setExternalId("externalId");
+        TechnologyDto technologyDto = new TechnologyDto();
+        technologyDto.setName("name");
+        technologyDto.setExternalId("externalId");
 
         when(projectRepository.findProjectByExternalId(project.getExternalId())).thenReturn(Optional.of(project));
         when(mapper.map(project, ProjectResponseDto.class)).thenReturn(projectResponseDto);
@@ -138,11 +159,20 @@ public class ProjectServiceTest {
         ProjectResponseDto projectResponseDto = ProjectFactory.getProjectResponseDto();
         Project project = ProjectFactory.getProject();
 
+        Technology technology = new Technology();
+        technology.setName("name");
+        technology.setExternalId("externalId");
+        TechnologyDto technologyDto = new TechnologyDto();
+        technologyDto.setName("name");
+        technologyDto.setExternalId("externalId");
+
+
         projectResponseDto.setExternalId(projectRequestDto.getExternalId());
         project.setExternalId(projectRequestDto.getExternalId());
 
         when(mapper.map(projectRequestDto, Project.class)).thenReturn(project);
         when(mapper.map(project, ProjectResponseDto.class)).thenReturn(projectResponseDto);
+        when(technologyRepository.findByExternalId(any(String.class))).thenReturn(Optional.of(technology));
         when(projectRepository.save(project)).thenReturn(project);
 
         ProjectResponseDto result = projectService.createProject(projectRequestDto);
@@ -159,6 +189,13 @@ public class ProjectServiceTest {
         ProjectResponseDto projectResponseDto = ProjectFactory.getProjectResponseDto();
         Project project = ProjectFactory.getProject();
 
+        Technology technology = new Technology();
+        technology.setName("name");
+        technology.setExternalId("externalId");
+        TechnologyDto technologyDto = new TechnologyDto();
+        technologyDto.setName("name");
+        technologyDto.setExternalId("externalId");
+
         projectResponseDto.setExternalId(projectRequestDto.getExternalId());
         project.setExternalId(projectRequestDto.getExternalId());
 
@@ -166,8 +203,10 @@ public class ProjectServiceTest {
         projectResponseDto.setClient("New");
 
         when(projectRepository.findProjectByExternalId(project.getExternalId())).thenReturn(Optional.of(project));
+        when(mapper.map(projectRequestDto, Project.class)).thenReturn(project);
         when(projectRepository.save(project)).thenReturn(project);
         when(mapper.map(project, ProjectResponseDto.class)).thenReturn(projectResponseDto);
+        when(technologyRepository.findByExternalId(any(String.class))).thenReturn(Optional.of(technology));
 
         ProjectResponseDto result = projectService.updateProject(projectRequestDto.getExternalId(), projectRequestDto);
         assertEquals(projectRequestDto.getClient(), result.getClient());

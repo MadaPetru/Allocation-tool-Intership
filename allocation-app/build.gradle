@@ -19,21 +19,22 @@ jar {
 }
 
 dependencies {
+
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation project(':allocation-api')
 	runtimeOnly 'mysql:mysql-connector-java'
 	implementation group: 'org.springframework.data', name: 'spring-data-jpa', version: '2.5.3'
 	implementation group: 'org.hibernate', name: 'hibernate-validator', version: '7.0.1.Final'
 	implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.12.3'
-	implementation group: 'org.mapstruct', name: 'mapstruct', version: '1.4.2.Final'
-	implementation group: 'org.apache.commons', name: 'commons-csv', version: '1.8'
 	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: '2.5.2'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	implementation group: 'org.apache.commons', name: 'commons-csv', version: '1.8'
 	testImplementation group: 'junit', name: 'junit', version: '4.12'
 	implementation group: 'javax.validation', name: 'validation-api', version: '2.0.1.Final'
 	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: '2.5.2'
 	compileOnly group: 'javax.servlet', name: 'javax.servlet-api'
 	testImplementation group: 'com.h2database', name: 'h2', version: '1.4.200'
+
 
 }
 test {

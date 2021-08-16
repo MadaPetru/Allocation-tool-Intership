@@ -3,9 +3,11 @@ package ro.fortech.allocation.project.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
+import ro.fortech.allocation.technology.dto.TechnologyDto;
 
 import javax.validation.constraints.NotNull;
 import java.util.Date;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -35,5 +37,5 @@ public class ProjectResponseDto {
     private String description;
 
     @NotNull
-    private String technicalStack;
+    private Set<TechnologyDto> technologyDtos;
 }
