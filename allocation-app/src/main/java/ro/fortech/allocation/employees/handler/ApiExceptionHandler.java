@@ -10,6 +10,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import ro.fortech.allocation.employees.exception.CsvParseException;
 import ro.fortech.allocation.employees.exception.EmployeeNotFoundException;
 
+import javax.persistence.EntityNotFoundException;
 import javax.validation.ConstraintViolationException;
 
 @ControllerAdvice
@@ -30,6 +31,13 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler({EmployeeNotFoundException.class})
     protected ResponseEntity<Object> handleEmployeeNotFoundException(
             EmployeeNotFoundException ex) {
+        return new ResponseEntity<>(
+                ex.getMessage(), new HttpHeaders(), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler({EntityNotFoundException.class})
+    protected ResponseEntity<Object> handleEntityNotFoundException(
+            EntityNotFoundException ex) {
         return new ResponseEntity<>(
                 ex.getMessage(), new HttpHeaders(), HttpStatus.NOT_FOUND);
     }

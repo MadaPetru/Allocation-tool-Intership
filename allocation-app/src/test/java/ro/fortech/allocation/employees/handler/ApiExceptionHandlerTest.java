@@ -12,6 +12,7 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import ro.fortech.allocation.employees.dto.EmployeeDto;
 import ro.fortech.allocation.employees.exception.EmployeeNotFoundException;
 
+import javax.persistence.EntityNotFoundException;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import java.util.Set;
@@ -44,6 +45,15 @@ public class ApiExceptionHandlerTest {
         EmployeeNotFoundException ex = new EmployeeNotFoundException("1");
         ResponseEntity<Object> response = exceptionHandler.handleEmployeeNotFoundException(ex);
         assertEquals("Could not find employee with Uid: 1", response.getBody());
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+
+    }
+
+    @Test
+    public void handleEntityNotFoundException_givenEntityNotFoundException_expectNotFoundStatus() {
+        EntityNotFoundException ex = new EntityNotFoundException("message");
+        ResponseEntity<Object> response = exceptionHandler.handleEntityNotFoundException(ex);
+        assertEquals("message", response.getBody());
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
 
     }
