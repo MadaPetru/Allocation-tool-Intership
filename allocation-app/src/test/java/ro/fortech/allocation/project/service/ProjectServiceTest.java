@@ -21,7 +21,6 @@ import ro.fortech.allocation.project.dto.ProjectResponseDto;
 import ro.fortech.allocation.project.exception.ProjectNotFoundException;
 import ro.fortech.allocation.project.model.Project;
 import ro.fortech.allocation.project.repository.ProjectRepository;
-import ro.fortech.allocation.technology.dto.TechnologyDto;
 import ro.fortech.allocation.technology.model.Technology;
 import ro.fortech.allocation.technology.repository.TechnologyRepository;
 
@@ -57,7 +56,7 @@ public class ProjectServiceTest {
         Technology technology = new Technology();
         technology.setName("name");
         technology.setExternalId("externalId");
-        TechnologyDto technologyDto = new TechnologyDto();
+        ro.fortech.allocation.technology.dto.TechnologyDto technologyDto = new ro.fortech.allocation.technology.dto.TechnologyDto();
         technologyDto.setName("name");
         technologyDto.setExternalId("externalId");
         Pageable pageable = PageRequest.of(0, 10);
@@ -77,7 +76,7 @@ public class ProjectServiceTest {
         Technology technology = new Technology();
         technology.setName("name");
         technology.setExternalId("externalId");
-        TechnologyDto technologyDto = new TechnologyDto();
+        ro.fortech.allocation.technology.dto.TechnologyDto technologyDto = new ro.fortech.allocation.technology.dto.TechnologyDto();
         technologyDto.setName("name");
         technologyDto.setExternalId("externalId");
 
@@ -162,7 +161,7 @@ public class ProjectServiceTest {
         Technology technology = new Technology();
         technology.setName("name");
         technology.setExternalId("externalId");
-        TechnologyDto technologyDto = new TechnologyDto();
+        ro.fortech.allocation.technology.dto.TechnologyDto technologyDto = new ro.fortech.allocation.technology.dto.TechnologyDto();
         technologyDto.setName("name");
         technologyDto.setExternalId("externalId");
 
@@ -192,7 +191,7 @@ public class ProjectServiceTest {
         Technology technology = new Technology();
         technology.setName("name");
         technology.setExternalId("externalId");
-        TechnologyDto technologyDto = new TechnologyDto();
+        ro.fortech.allocation.technology.dto.TechnologyDto technologyDto = new ro.fortech.allocation.technology.dto.TechnologyDto();
         technologyDto.setName("name");
         technologyDto.setExternalId("externalId");
 

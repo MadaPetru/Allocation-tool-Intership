@@ -18,38 +18,43 @@ import ro.fortech.allocation.technology.model.Technology;
 import ro.fortech.allocation.technology.repository.TechnologyRepository;
 
 import javax.validation.Valid;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
+
+import static java.util.function.Predicate.isEqual;
 
 @Service
 @Validated
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class TechnologyService {
-    public static final Set<Technology> NULL = null;
+    private static final Set<Technology> NULL = null;
     private final TechnologyRepository repository;
     private final EmployeeRepository employeeRepository;
     private final ProjectRepository projectRepository;
     private final AssignmentRepository assignmentRepository;
 
     public TechnologyDto add(@Valid TechnologyDto dto) {
-        String convertedName = dto.getName().toLowerCase().trim().replaceAll(" +"," ");
-            Technology tech = this.dtoToTechnology(dto);
-            tech.setName(convertedName);
-            tech.setExternalId(UUID.randomUUID().toString());
-            try {
-                return this.technologyToDto(repository.save(tech));
-            } catch (Exception e) {
-                throw new TechnologyAlreadyExistsInTheDatabase(dto.getName(), tech.getName());
-            }
+        String convertedName = dto.getName().toLowerCase().trim().replaceAll(" +", " ");
+        Technology tech = this.dtoToTechnology(dto);
+        tech.setName(convertedName);
+        tech.setExternalId(UUID.randomUUID().toString());
+        try {
+            return this.technologyToDto(repository.save(tech));
+        } catch (Exception e) {
+            throw new TechnologyAlreadyExistsInTheDatabase(dto.getName(), tech.getName());
         }
+    }
 
     public Page<TechnologyDto> findAll(Pageable pageable) {
         return repository.findAll(pageable).map(this::technologyToDto);
     }
 
-    public TechnologyDto update(@Valid  TechnologyDto dto,  String externalId) {
+    public TechnologyDto update(@Valid TechnologyDto dto, String externalId) {
         Technology technology = repository.findByExternalId(externalId).orElseThrow(() -> new TechnologyNotFoundByExternalIdException(externalId));
-        String convertedName = dto.getName().toLowerCase().trim().replaceAll(" +"," ");
+        String convertedName = dto.getName().toLowerCase().trim().replaceAll(" +", " ");
         Optional<Technology> tech = repository.findByName(convertedName);
         if (tech.isPresent()) {
             throw new TechnologyAlreadyExistsInTheDatabase(dto.getName(), tech.get().getName());
@@ -83,6 +88,7 @@ public class TechnologyService {
         return true;
     }
 
+    public List<TechnologyDto> findTechnologiesByName(String name) {
     private void eraseTechnologyForEmployee(Technology technology, Employee employee) {
         Set<Technology> set = employee.getTechnologies();
         Set<Technology> setResult = set.stream().filter(e -> !e.getName().equals(technology.getName()))
@@ -100,9 +106,8 @@ public class TechnologyService {
         projectRepository.save(project);
     }
 
-    public List<TechnologyDto> findTechnologiesByName(String name){
-
-       return repository.findTechnologyByName(name)
+    public List<TechnologyDto> findTechnologiesByName(String name) {
+        return repository.findTechnologyByName(name)
                 .stream()
                 .map(this::technologyToDto)
                 .collect(Collectors.toList());
@@ -123,24 +128,40 @@ public class TechnologyService {
     }
 
     private List<Project> getProjectsWithTechnology(String externalId) {
-        return projectRepository.findAll()
-                .stream().filter(e -> e.getTechnologies().stream().map(Technology::getExternalId).collect(Collectors.toList())
-                        .contains(externalId)).collect(Collectors.toList());
+        return projectRepository.findAll().stream()
+                .filter(project -> projectHasTechnology(project, externalId))
+                .collect(Collectors.toList());
     }
 
     private List<Employee> getEmployeesWithTechnology(String externalId) {
-        return employeeRepository.findAll()
-                .stream().filter(e -> e.getTechnologies().stream().map(Technology::getExternalId).collect(Collectors.toList())
-                        .contains(externalId)).collect(Collectors.toList());
+        return employeeRepository.findAll().stream()
+                .filter(employee -> employeeHasTechnology(employee, externalId))
+                .collect(Collectors.toList());
     }
 
     private void deleteAllAssignmentsWithProjectsOrEmployees(List<Employee> employees, List<Project> projects) {
-        for (Employee employee: employees){
+        for (Employee employee : employees) {
             assignmentRepository.deleteAll(assignmentRepository.findAssignmentsByEmployee(employee));
         }
 
-        for (Project project: projects){
+        for (Project project : projects) {
             assignmentRepository.deleteAll(assignmentRepository.findAssignmentsByProject(project));
         }
+    }
+
+    private boolean employeeHasTechnology(Employee employee, String externalID) {
+        Set<Technology> technologies = employee.getTechnologies();
+        boolean hasTechnology = technologies.stream()
+                .map(Technology::getExternalId)
+                .anyMatch(isEqual(externalID));
+        return hasTechnology;
+    }
+
+    private boolean projectHasTechnology(Project project, String externalId) {
+        Set<Technology> technologies = project.getTechnologies();
+        boolean hasTechnology = technologies.stream()
+                .map(Technology::getExternalId)
+                .anyMatch(isEqual(externalId));
+        return hasTechnology;
     }
 }

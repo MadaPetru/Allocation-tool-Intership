@@ -1,6 +1,8 @@
 package ro.fortech.allocation.employees.controller;
 
-import io.swagger.annotations.*;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -81,4 +83,12 @@ public interface EmployeeApi {
     })
     ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file) throws IOException;
 
+    @ResponseStatus(code = HttpStatus.OK)
+    @PatchMapping(path = "/{employeeUid}")
+    @ApiOperation(value = "Add a technology to an employee")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully added role to the employee"),
+            @ApiResponse(code = 400, message = "Bad request")
+    })
+    ResponseEntity<EmployeeDto> addTechnologyToEmployee(@PathVariable String employeeUid, @RequestParam String externalId);
 }

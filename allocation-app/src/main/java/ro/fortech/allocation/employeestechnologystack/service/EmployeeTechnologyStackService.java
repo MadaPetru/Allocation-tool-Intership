@@ -15,7 +15,6 @@ import ro.fortech.allocation.employeestechnologystack.exception.EmployeeTechnolo
 import ro.fortech.allocation.employeestechnologystack.model.EmployeeTechnologyStack;
 import ro.fortech.allocation.employeestechnologystack.model.EmployeeTechnologyStackKey;
 import ro.fortech.allocation.employeestechnologystack.repository.EmployeeTechnologyStackRepository;
-import ro.fortech.allocation.technology.dto.TechnologyDto;
 import ro.fortech.allocation.technology.exception.TechnologyNotFoundByExternalIdException;
 import ro.fortech.allocation.technology.model.Technology;
 import ro.fortech.allocation.technology.repository.TechnologyRepository;
@@ -64,10 +63,10 @@ public class EmployeeTechnologyStackService {
         repository.delete(employeeTechnologyStack);
     }
 
-    public List<TechnologyDto> getAllTechnologiesByEmployeeId(String employeeExternalId) {
+    public List<ro.fortech.allocation.technology.dto.TechnologyDto> getAllTechnologiesByEmployeeId(String employeeExternalId) {
         Employee employee = employeeRepository.findEmployeeByUid(employeeExternalId)
                 .orElseThrow(() -> new EmployeeNotFoundException(employeeExternalId));
-        List<TechnologyDto> technologiesOfEmployee = new ArrayList<>();
+        List<ro.fortech.allocation.technology.dto.TechnologyDto> technologiesOfEmployee = new ArrayList<>();
         return technologiesOfEmployee;
     }
 
@@ -89,7 +88,7 @@ public class EmployeeTechnologyStackService {
         return mapper.map(entity, EmployeeTechnologyStackDto.class);
     }
 
-    private TechnologyDto fromTechnologyToTechnologyDto(Technology technology) {
-        return mapper.map(technology, TechnologyDto.class);
+    private ro.fortech.allocation.technology.dto.TechnologyDto fromTechnologyToTechnologyDto(Technology technology) {
+        return mapper.map(technology, ro.fortech.allocation.technology.dto.TechnologyDto.class);
     }
 }

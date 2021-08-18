@@ -61,4 +61,9 @@ public class EmployeeController implements EmployeeApi {
         employeeService.save(file);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+    @Override
+    public ResponseEntity<EmployeeDto> addTechnologyToEmployee(String employeeUid, String externalId) {
+        return ResponseEntity.ok(employeeService.addTechnologyToEmployee(employeeUid, externalId));
+    }
 }

@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
+import ro.fortech.allocation.technology.dto.TechnologyDto;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
@@ -54,5 +55,5 @@ public class EmployeeDto {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private Date endDate;
 
-    private Set<String> technologies;
+    private Set<TechnologyDto> technologies;
 }

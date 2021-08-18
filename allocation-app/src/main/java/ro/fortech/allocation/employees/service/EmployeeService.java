@@ -15,10 +15,11 @@ import ro.fortech.allocation.employees.exception.EmployeeNotFoundException;
 import ro.fortech.allocation.employees.helper.CsvHelper;
 import ro.fortech.allocation.employees.model.Employee;
 import ro.fortech.allocation.employees.repository.EmployeeRepository;
+import ro.fortech.allocation.technology.dto.TechnologyDto;
+import ro.fortech.allocation.technology.exception.TechnologyNotFoundByExternalIdException;
 import ro.fortech.allocation.technology.model.Technology;
 import ro.fortech.allocation.technology.repository.TechnologyRepository;
 
-import javax.persistence.EntityNotFoundException;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -41,29 +42,30 @@ public class EmployeeService {
     }
 
     public void save(MultipartFile file) throws IOException {
-        if(!CsvHelper.hasCSVFormat(file))
+        if (!CsvHelper.hasCSVFormat(file))
             throw new CsvParseException("");
         employeeRepository.saveAll(CsvHelper.csvToEmployees(file.getInputStream()));
     }
-    public EmployeeDto update(@Valid EmployeeDto employeeDto, String Uid) {
-        Employee oldEmployee = employeeRepository.findEmployeeByUid(Uid).orElseThrow(() -> new EmployeeNotFoundException(Uid));
+
+    public EmployeeDto update(@Valid EmployeeDto employeeDto, String employeeUid) {
+        Employee oldEmployee = employeeRepository.findEmployeeByUid(employeeUid).orElseThrow(() -> new EmployeeNotFoundException(employeeUid));
         Employee updatedEmployee = fromDtoToEntity(employeeDto);
         updatedEmployee.setId(oldEmployee.getId());
         updatedEmployee.setUid(oldEmployee.getUid());
         return fromEntityToDto(employeeRepository.save(updatedEmployee));
     }
 
-    public EmployeeDto findByUid(String uid) {
-        return fromEntityToDto(employeeRepository.findEmployeeByUid(uid).orElseThrow(() -> new EmployeeNotFoundException(uid)));
+    public EmployeeDto findByUid(String employeeUid) {
+        return fromEntityToDto(employeeRepository.findEmployeeByUid(employeeUid).orElseThrow(() -> new EmployeeNotFoundException(employeeUid)));
     }
 
     public Page<EmployeeDto> findAll(Pageable pageable) {
         return employeeRepository.findAll(pageable).map(this::fromEntityToDto);
     }
 
-    public void deleteByUid(String uid) {
+    public void deleteByUid(String employeeUid) {
 
-        Employee employee = employeeRepository.findEmployeeByUid(uid).orElseThrow(() -> new EmployeeNotFoundException(uid));
+        Employee employee = employeeRepository.findEmployeeByUid(employeeUid).orElseThrow(() -> new EmployeeNotFoundException(employeeUid));
         assignmentRepository.deleteAll(assignmentRepository.findAssignmentsByEmployee(employee));
 
         employeeRepository.delete(employee);
@@ -88,7 +90,7 @@ public class EmployeeService {
     public EmployeeDto fromEntityToDto(Employee employee) {
         Set<Technology> technologies = employee.getTechnologies();
 
-        Set<String> technologiesNames = mapTechnologiesIntoStrings(technologies);
+        Set<TechnologyDto> technologyDtos = mapTechnologiesToDtos(technologies);
 
         return EmployeeDto.builder()
                 .uid(employee.getUid())
@@ -101,16 +103,15 @@ public class EmployeeService {
                 .supervisor(employee.getSupervisor())
                 .unit(employee.getUnit())
                 .workingHours(employee.getWorkingHours())
-                .technologies(technologiesNames)
+                .technologies(technologyDtos)
                 .build();
     }
 
     public Employee fromDtoToEntity(EmployeeDto employeeDto) {
 
-        Set<String> technologiesNames = employeeDto.getTechnologies();
+        Set<TechnologyDto> technologies = employeeDto.getTechnologies();
 
-        Set<Technology> actualTechnologies = technologiesNames.stream().map(this::searchForTechnology)
-                .collect(Collectors.toSet());
+        Set<Technology> actualTechnologies = technologies.stream().map(t -> searchForTechnology(t.getExternalId())).collect(Collectors.toSet());
 
         return Employee.builder()
                 .uid(employeeDto.getUid())
@@ -128,14 +129,24 @@ public class EmployeeService {
                 .build();
     }
 
-    private Set<String> mapTechnologiesIntoStrings(Set<Technology> technologies) {
+    private Set<TechnologyDto> mapTechnologiesToDtos(Set<Technology> technologies) {
         return technologies.stream()
-                .map(Technology::getName)
+                .map(t -> new TechnologyDto(t.getName(), t.getExternalId()))
                 .collect(Collectors.toSet());
     }
 
-    private Technology searchForTechnology(String technology) {
-        return technologyRepository.findByName(technology)
-                .orElseThrow(() -> new EntityNotFoundException("Couldn't find technology with name: " + technology + "!"));
+    private Technology searchForTechnology(String externalID) {
+        return technologyRepository.findByExternalId(externalID)
+                .orElseThrow(() -> new TechnologyNotFoundByExternalIdException(externalID));
+    }
+
+    public EmployeeDto addTechnologyToEmployee(String employeeUid, String externalID) {
+        Employee employee = employeeRepository.findEmployeeByUid(employeeUid).orElseThrow(() -> new EmployeeNotFoundException(employeeUid));
+        Technology technology = technologyRepository.findByExternalId(externalID).orElseThrow(() -> new TechnologyNotFoundByExternalIdException(externalID));
+
+        Set<Technology> technologies = employee.getTechnologies();
+        technologies.add(technology);
+
+        return fromEntityToDto(employeeRepository.save(employee));
     }
 }

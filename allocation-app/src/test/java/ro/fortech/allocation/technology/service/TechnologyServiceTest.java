@@ -9,7 +9,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import ro.fortech.allocation.assignments.repository.AssignmentRepository;
 import ro.fortech.allocation.employees.repository.EmployeeRepository;
 import ro.fortech.allocation.project.repository.ProjectRepository;
 import ro.fortech.allocation.technology.dto.TechnologyDto;
@@ -23,24 +22,25 @@ import java.util.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TechnologyServiceTest {
     @InjectMocks
-    TechnologyService service;
+    private TechnologyService service;
 
     @Mock
-    TechnologyRepository repository;
+    private TechnologyRepository repository;
 
     @Mock
-    EmployeeRepository employeeRepository;
+    private EmployeeRepository employeeRepository;
 
     @Mock
-    ProjectRepository projectRepository;
+    private ProjectRepository projectRepository;
 
     @Test
-    public void findTechnologiesByName_givenName_expectTechnologies(){
+    public void findTechnologiesByName_givenName_expectTechnologies() {
         Technology tech = Technology.builder()
                 .externalId("externalId")
                 .id(1L)
@@ -51,7 +51,7 @@ public class TechnologyServiceTest {
         when(repository.findTechnologyByName(any(String.class))).thenReturn(list);
         service.findTechnologiesByName(tech.getName());
         verify(repository).findTechnologyByName(tech.getName());
-        assertEquals(1,service.findTechnologiesByName(tech.getName()).size());
+        assertEquals(1, service.findTechnologiesByName(tech.getName()).size());
     }
 
     @Test
@@ -71,7 +71,6 @@ public class TechnologyServiceTest {
         verify(repository).save(any(Technology.class));
         assertThat(savedTech.getName()).isEqualTo(dto.getName());
         assertThat(savedTech.getExternalId()).isEqualTo(dto.getExternalId());
-
     }
 
     @Test
@@ -84,11 +83,11 @@ public class TechnologyServiceTest {
                 .name("tech")
                 .externalId("externalId")
                 .build();
-        Pageable page = PageRequest.of(3,3);
+        Pageable page = PageRequest.of(3, 3);
         Page<Technology> pageTech = new PageImpl<>(Collections.singletonList(tech));
         when(repository.findAll(page)).thenReturn(pageTech);
         Page<TechnologyDto> pageResult = service.findAll(page);
-        assertEquals(pageResult.getTotalElements(),pageTech.getTotalElements());
+        assertEquals(pageResult.getTotalElements(), pageTech.getTotalElements());
     }
 
     @Test
@@ -104,7 +103,7 @@ public class TechnologyServiceTest {
         when(repository.findByExternalId(any(String.class))).thenReturn(java.util.Optional.ofNullable(tech));
         when(repository.save(any(Technology.class))).thenReturn(tech);
 
-        TechnologyDto updatedTech = service.update(dto,dto.getExternalId());
+        TechnologyDto updatedTech = service.update(dto, dto.getExternalId());
         verify(repository).save(any(Technology.class));
         assertThat(updatedTech.getName()).isEqualTo(dto.getName());
         assertThat(updatedTech.getExternalId()).isEqualTo(dto.getExternalId());
@@ -128,7 +127,7 @@ public class TechnologyServiceTest {
     }
 
     @Test
-    public void deleteByExternalId_givenExternalId_ExpectedTrue(){
+    public void deleteByExternalId_givenExternalId_ExpectedTrue() {
         Technology tech = Technology.builder()
                 .name("tech")
                 .externalId("externalId")
@@ -144,11 +143,11 @@ public class TechnologyServiceTest {
 
         Boolean expected = service.deleteByExternalId(dto.getExternalId());
         verify(repository).delete(tech);
-        assertEquals(true,expected);
+        assertEquals(true, expected);
     }
 
     @Test
-    public void technologyToDtoTest(){
+    public void technologyToDtoTest() {
         Technology tech = Technology.builder()
                 .name("tech")
                 .externalId("externalId")
@@ -159,7 +158,7 @@ public class TechnologyServiceTest {
     }
 
     @Test
-    public void dtoToTechnologyTest(){
+    public void dtoToTechnologyTest() {
         TechnologyDto dto = TechnologyDto.builder()
                 .name("tech")
                 .externalId("externalId")
@@ -170,7 +169,7 @@ public class TechnologyServiceTest {
     }
 
     @Test(expected = TechnologyNotFoundByExternalIdException.class)
-    public void findByExternalId_givenExternalId_expectedTechnologyNotFoundByExternalIdException(){
+    public void findByExternalId_givenExternalId_expectedTechnologyNotFoundByExternalIdException() {
         TechnologyDto dto = makeDto();
         dto.setExternalId("tech");
         when(repository.findByExternalId(any(String.class))).thenReturn(Optional.empty());
@@ -178,50 +177,46 @@ public class TechnologyServiceTest {
     }
 
     @Test(expected = TechnologyNotFoundByExternalIdException.class)
-    public void deleteByExternalId_givenExternalId_expectedTechnologyNotFoundByExternalIdException(){
+    public void deleteByExternalId_givenExternalId_expectedTechnologyNotFoundByExternalIdException() {
         Technology tech = makeTechnology();
         tech.setExternalId("tech");
         when(repository.findByExternalId(any(String.class))).thenReturn(Optional.empty());
         service.deleteByExternalId(tech.getExternalId());
     }
 
-
-
     @Test(expected = TechnologyAlreadyExistsInTheDatabase.class)
-    public void updateTechnology_givenTechnology_expectTechnologyAlreadyExistInDatabase(){
+    public void updateTechnology_givenTechnology_expectTechnologyAlreadyExistInDatabase() {
         Technology tech = makeTechnology();
         TechnologyDto dto = makeDto();
         dto.setExternalId("tech");
         tech.setExternalId("tech");
         when(repository.findByExternalId(any(String.class))).thenReturn(Optional.of(tech));
         when(repository.findByName(any(String.class))).thenReturn(Optional.of(tech));
-        service.update(dto,dto.getExternalId());
+        service.update(dto, dto.getExternalId());
     }
 
     @Test(expected = TechnologyNotFoundByExternalIdException.class)
-    public void updateTechnology_givenTechnology_expectTechnologyNotFoundByExternalId(){
+    public void updateTechnology_givenTechnology_expectTechnologyNotFoundByExternalId() {
         TechnologyDto dto = makeDto();
         dto.setExternalId("tech");
         when(repository.findByExternalId(any(String.class))).thenReturn(Optional.empty());
-        service.update(dto,dto.getExternalId());
+        service.update(dto, dto.getExternalId());
     }
 
-
-
     @Test(expected = TechnologyAlreadyExistsInTheDatabase.class)
-    public void addTechnology_givenTechnology_expectTechnologyAlreadyExistInTheDatabase(){
+    public void addTechnology_givenTechnology_expectTechnologyAlreadyExistInTheDatabase() {
         TechnologyDto request = makeDto();
         when(repository.save(any(Technology.class))).thenThrow(TechnologyAlreadyExistsInTheDatabase.class);
         service.add(request);
     }
 
-    private TechnologyDto makeDto(){
+    private TechnologyDto makeDto() {
         return TechnologyDto.builder()
                 .name("tech")
                 .build();
     }
 
-    private Technology makeTechnology(){
+    private Technology makeTechnology() {
         return Technology.builder()
                 .name("tech")
                 .build();

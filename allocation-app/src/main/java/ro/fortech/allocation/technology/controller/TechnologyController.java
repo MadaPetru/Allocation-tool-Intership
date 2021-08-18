@@ -37,8 +37,6 @@ public class TechnologyController implements TechnologyApi {
 
     @Override
     public ResponseEntity<TechnologyDto> getTechnologyByExternalId(String externalId) {
-
-
         return new ResponseEntity<>(service.findByExternalId(externalId), HttpStatus.OK);
     }
 

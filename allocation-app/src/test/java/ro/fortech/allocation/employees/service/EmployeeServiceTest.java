@@ -11,19 +11,24 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import ro.fortech.allocation.assignments.repository.AssignmentRepository;
 import ro.fortech.allocation.employees.dto.EmployeeDto;
+import ro.fortech.allocation.employees.dto.EmployeeEmailDto;
 import ro.fortech.allocation.employees.exception.EmployeeNotFoundException;
 import ro.fortech.allocation.employees.model.Employee;
 import ro.fortech.allocation.employees.repository.EmployeeRepository;
+import ro.fortech.allocation.technology.dto.TechnologyDto;
 import ro.fortech.allocation.technology.model.Technology;
 import ro.fortech.allocation.technology.repository.TechnologyRepository;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+import static ro.fortech.allocation.EmployeeFactory.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class EmployeeServiceTest {
@@ -41,73 +46,41 @@ public class EmployeeServiceTest {
 
     @Test
     public void save_givenEmployee_expectTheEmployee() throws ParseException {
-        Technology techOne = Technology.builder().name("TechOne").build();
-        Set<Technology> technologySet = new HashSet<>(Arrays.asList(techOne));
-        Set<String> technologyNames = new HashSet<>(Arrays.asList("TechOne"));
+        Employee employee = createEmployee();
+        EmployeeDto employeeDto = createEmployeeDto();
 
-        EmployeeDto employeeDto = EmployeeDto.builder()
-                .email("EmployeeOne@yahoo.com")
-                .name("EmployeeOne")
-                .technologies(technologyNames)
-                .active(true)
-                .internalPosition("Employee")
-                .startDate(new SimpleDateFormat("yyyy-MM-dd").parse("2020-05-10"))
-                .endDate(new SimpleDateFormat("yyyy-MM-dd").parse("2020-06-10"))
-                .build();
+        Technology technology = extractTechnologyFromSet(employee);
 
-        Employee employee = Employee.builder()
-                .email("EmployeeOne@yahoo.com")
-                .name("EmployeeOne")
-                .technologies(technologySet)
-                .active(true)
-                .internalPosition("Employee")
-                .startDate(new SimpleDateFormat("yyyy-MM-dd").parse("2020-05-10"))
-                .endDate(new SimpleDateFormat("yyyy-MM-dd").parse("2020-06-10"))
-                .build();
-
-        when(technologyRepository.findByName(any())).thenReturn(Optional.of(techOne));
         when(employeeRepository.save(any(Employee.class))).thenReturn(employee);
+        when(technologyRepository.findByExternalId(anyString())).thenReturn(Optional.of(technology));
 
-        EmployeeDto result = employeeService.save(employeeDto);
-        employeeDto.setUid(result.getUid());
-        verify(employeeRepository).save(any(Employee.class));
+        EmployeeDto resultedValue = employeeService.save(employeeDto);
+        employeeDto.setUid(resultedValue.getUid());
 
-        assertEquals(employeeDto, result);
+        verify(employeeRepository, times(1)).save(any(Employee.class));
+
+        assertEquals(resultedValue, employeeDto);
+    }
+
+    private Technology extractTechnologyFromSet(Employee employee) {
+        return employee.getTechnologies()
+                .stream()
+                .findFirst()
+                .get();
     }
 
     @Test
     public void update_givenUidAndUpdatedValues_expectTheUpdatedEmployee() throws ParseException {
-        Technology techOne = Technology.builder().name("TechOne").build();
-        Set<Technology> technologySet = new HashSet<>(Arrays.asList(techOne));
-        Set<String> technologyNames = new HashSet<>(Arrays.asList("TechOne"));
+        Employee employee = createEmployee();
+        EmployeeDto employeeDto = createEmployeeDto();
 
-        EmployeeDto employeeDto = EmployeeDto.builder()
-                .uid("22")
-                .email("EmployeeDto@yahoo.com")
-                .name("EmployeeDtoOne")
-                .technologies(technologyNames)
-                .active(true)
-                .internalPosition("Employee")
-                .startDate(new SimpleDateFormat("yyyy-MM-dd").parse("2020-05-10"))
-                .endDate(new SimpleDateFormat("yyyy-MM-dd").parse("2020-06-10"))
-                .build();
+        Technology technology = extractTechnologyFromSet(employee);
 
-        Employee employee = Employee.builder()
-                .uid("22")
-                .email(employeeDto.getEmail())
-                .name(employeeDto.getName())
-                .technologies(technologySet)
-                .active(employeeDto.getActive())
-                .internalPosition(employeeDto.getInternalPosition())
-                .startDate(employeeDto.getStartDate())
-                .endDate(employeeDto.getEndDate())
-                .build();
-
-        when(technologyRepository.findByName(any())).thenReturn(Optional.of(techOne));
-        when(employeeRepository.findEmployeeByUid("22")).thenReturn(Optional.of(employee));
+        when(technologyRepository.findByExternalId(any())).thenReturn(Optional.of((technology)));
+        when(employeeRepository.findEmployeeByUid(anyString())).thenReturn(Optional.of(employee));
         when(employeeRepository.save(any(Employee.class))).thenReturn(employee);
 
-        EmployeeDto result = employeeService.update(employeeDto, "22");
+        EmployeeDto result = employeeService.update(employeeDto, employee.getUid());
 
         verify(employeeRepository).save(any(Employee.class));
 
@@ -116,53 +89,24 @@ public class EmployeeServiceTest {
 
     @Test
     public void findByUid_givenUid_expectTheEmployee() throws ParseException {
-        Technology techOne = Technology.builder().name("TechOne").build();
-        Set<Technology> technologySet = new HashSet<>(Arrays.asList(techOne));
-
-        Employee employee = Employee.builder()
-                .uid("22")
-                .email("EmployeeOne@yahoo.com")
-                .name("EmployeeOne")
-                .technologies(technologySet)
-                .active(true)
-                .internalPosition("Employee")
-                .startDate(new SimpleDateFormat("yyyy-MM-dd").parse("2020-05-10"))
-                .endDate(new SimpleDateFormat("yyyy-MM-dd").parse("2020-06-10"))
-                .build();
+        Employee employee = createEmployee();
+        EmployeeDto employeeDto = createEmployeeDto();
 
         when(employeeRepository.findEmployeeByUid(anyString())).thenReturn(Optional.of(employee));
 
-        EmployeeDto fetchedEmployee = employeeService.findByUid(employee.getUid());
+        EmployeeDto resultedValue = employeeService.findByUid(employee.getUid());
 
-        verify(employeeRepository).findEmployeeByUid("22");
+        verify(employeeRepository, times(1)).findEmployeeByUid(employee.getUid());
 
-        assertEquals(fetchedEmployee.getName(), employee.getName());
-        assertEquals(fetchedEmployee.getEmail(), employee.getEmail());
-        assertEquals(fetchedEmployee.getActive(), employee.getActive());
-        assertEquals(fetchedEmployee.getInternalPosition(), employee.getInternalPosition());
-        assertEquals(fetchedEmployee.getStartDate(), employee.getStartDate());
-        assertEquals(fetchedEmployee.getEndDate(), employee.getEndDate());
-
+        assertEquals(employeeDto, resultedValue);
     }
 
     @Test
     public void findAll_givenEmployees_expectTheEmployees() throws ParseException {
-        Technology techOne = Technology.builder().name("TechOne").build();
-        Set<Technology> technologySet = new HashSet<>(Arrays.asList(techOne));
-
-        Employee randomEmployee = Employee.builder()
-                .uid("22")
-                .email("RandomEmployee@yahoo.com")
-                .name("RandomEmployee")
-                .technologies(technologySet)
-                .active(true)
-                .internalPosition("Employee")
-                .startDate(new SimpleDateFormat("yyyy-MM-dd").parse("2020-05-10"))
-                .endDate(new SimpleDateFormat("yyyy-MM-dd").parse("2020-06-10"))
-                .build();
+        Employee employee = createEmployee();
 
         Pageable pageable = PageRequest.of(3, 3);
-        Page<Employee> userPage = new PageImpl<>(Collections.singletonList(randomEmployee));
+        Page<Employee> userPage = new PageImpl<>(Collections.singletonList(employee));
 
         when(employeeRepository.findAll(pageable)).thenReturn(userPage);
 
@@ -172,103 +116,116 @@ public class EmployeeServiceTest {
 
     @Test
     public void deleteByUid_givenUid_expectStatusOk() throws ParseException {
-        Employee employee = Employee.builder()
-                .uid("22")
-                .email("adsa@yahoo.com")
-                .name("aaa")
-                .active(true)
-                .internalPosition("aaaa")
-                .startDate(new SimpleDateFormat("yyyy-MM-dd").parse("2020-05-10"))
-                .endDate(new SimpleDateFormat("yyyy-MM-dd").parse("2020-06-10"))
-                .build();
+        Employee employee = createEmployee();
+
         when(employeeRepository.findEmployeeByUid(anyString())).thenReturn(Optional.of(employee));
         when(assignmentRepository.findAssignmentsByEmployee(employee)).thenReturn(new ArrayList<>());
 
         employeeService.deleteByUid(employee.getUid());
-        verify(employeeRepository).delete(employee);
+
+        verify(employeeRepository, times(1)).delete(employee);
     }
 
     @Test
     public void fromEntityToDto_givenEntity_expectDto() throws ParseException {
-        Technology techOne = Technology.builder().name("TechOne").build();
-        Set<Technology> technologySet = new HashSet<>(Arrays.asList(techOne));
+        Employee employee = createEmployee();
+        EmployeeDto employeeDto = createEmployeeDto();
 
-        Employee employee = Employee.builder()
-                .uid("22")
-                .email("adsa@yahoo.com")
-                .name("aaa")
-                .active(true)
-                .internalPosition("aaaa")
-                .startDate(new SimpleDateFormat("yyyy-MM-dd").parse("2020-05-10"))
-                .endDate(new SimpleDateFormat("yyyy-MM-dd").parse("2020-06-10"))
-                .technologies(technologySet)
-                .build();
+        EmployeeDto resultedValue = employeeService.fromEntityToDto(employee);
 
-        EmployeeDto employeeDto = employeeService.fromEntityToDto(employee);
-
-        assertEquals(employeeDto.getName(), employee.getName());
-        assertEquals(employeeDto.getEmail(), employee.getEmail());
-        assertEquals(employeeDto.getActive(), employee.getActive());
-        assertEquals(employeeDto.getInternalPosition(), employee.getInternalPosition());
-        assertEquals(employeeDto.getStartDate(), employee.getStartDate());
-        assertEquals(employeeDto.getEndDate(), employee.getEndDate());
-
+        assertEquals(employeeDto, resultedValue);
     }
 
     @Test
     public void fromDtoToEntity_givenDto_expectEntity() throws ParseException {
-        Technology technology = Technology.builder().name("TechOne").build();
-        Set<String> technologySet = new HashSet<>(Arrays.asList("TechOne"));
+        Employee employee = createEmployee();
+        EmployeeDto employeeDto = createEmployeeDto();
 
-        EmployeeDto employeeDto = EmployeeDto.builder()
-                .uid("22")
-                .email("adsa@yahoo.com")
-                .name("aaa")
-                .active(true)
-                .internalPosition("aaaa")
-                .startDate(new SimpleDateFormat("yyyy-MM-dd").parse("2020-05-10"))
-                .endDate(new SimpleDateFormat("yyyy-MM-dd").parse("2020-06-10"))
-                .technologies(technologySet)
-                .build();
+        Technology technology = extractTechnologyFromSet(employee);
 
-        when(technologyRepository.findByName(any()))
-                .thenReturn(Optional.ofNullable(Technology.builder()
-                        .name("TechOne").build()));
+        when(technologyRepository.findByExternalId(anyString())).thenReturn(Optional.of(technology));
 
-        Employee employee = employeeService.fromDtoToEntity(employeeDto);
+        Employee resultedValue = employeeService.fromDtoToEntity(employeeDto);
 
-        assertEquals(employeeDto.getName(), employee.getName());
-        assertEquals(employeeDto.getEmail(), employee.getEmail());
-        assertEquals(employeeDto.getActive(), employee.getActive());
-        assertEquals(employeeDto.getInternalPosition(), employee.getInternalPosition());
-        assertEquals(employeeDto.getStartDate(), employee.getStartDate());
-        assertEquals(employeeDto.getEndDate(), employee.getEndDate());
+        assertEquals(employee.getId(), resultedValue.getId());
+        assertEquals(employee.getUid(), resultedValue.getUid());
+        assertEquals(employee.getEmail(), resultedValue.getEmail());
+        assertEquals(employee.getTechnologies(), resultedValue.getTechnologies());
     }
 
     @Test(expected = EmployeeNotFoundException.class)
     public void findByUid_givenUid_expectEmployeeNotFoundException() {
         when(employeeRepository.findEmployeeByUid(anyString())).thenReturn(Optional.empty());
+
         employeeService.findByUid("1");
     }
 
     @Test(expected = EmployeeNotFoundException.class)
     public void update_givenUidAndUpdatedValues_expectEmployeeNotFoundException() throws ParseException {
-        EmployeeDto employeeDto = EmployeeDto.builder()
-                .uid("22")
-                .email("adsa@yahoo.com")
-                .name("aaa")
-                .active(true)
-                .internalPosition("aaaa")
-                .startDate(new SimpleDateFormat("yyyy-MM-dd").parse("2020-05-10"))
-                .endDate(new SimpleDateFormat("yyyy-MM-dd").parse("2020-06-10"))
-                .build();
+        EmployeeDto employeeDto = createEmployeeDto();
+
         when(employeeRepository.findEmployeeByUid(anyString())).thenReturn(Optional.empty());
+
         employeeService.update(employeeDto, "1");
     }
 
     @Test(expected = EmployeeNotFoundException.class)
     public void delete_givenUid_expectEmployeeNotFoundException() {
         when(employeeRepository.findEmployeeByUid(anyString())).thenReturn(Optional.empty());
+
         employeeService.deleteByUid("1");
     }
+
+    @Test
+    public void givenATechnologyToAddToAnEmployee_ShouldReturnAnEmployeeWithTheAddedTechnology() throws ParseException {
+        Technology toBeAddedTechnology = Technology.builder().name("SomeTechnology").externalId("SomeExternalID").build();
+        TechnologyDto toBeAddedTechnologyDto = TechnologyDto.builder().name("SomeTechnology").externalId("SomeExternalID").build();
+
+        Employee employee = createEmployee();
+        EmployeeDto employeeDto = createEmployeeDto();
+
+        employeeDto.getTechnologies().add(toBeAddedTechnologyDto);
+
+        when(technologyRepository.findByExternalId("SomeExternalID")).thenReturn(Optional.of(toBeAddedTechnology));
+        when(employeeRepository.findEmployeeByUid(employee.getUid())).thenReturn(Optional.of(employee));
+        when(employeeRepository.save(any(Employee.class))).thenReturn(employee);
+
+        EmployeeDto resultedValue = employeeService.addTechnologyToEmployee(employee.getUid(), toBeAddedTechnology.getExternalId());
+
+        assertEquals(employeeDto, resultedValue);
+
+        verify(technologyRepository, times(1)).findByExternalId("SomeExternalID");
+        verify(employeeRepository, times(1)).findEmployeeByUid(employee.getUid());
+        verify(employeeRepository, times(1)).save(employee);
+    }
+
+    @Test
+    public void givenAnEntity_ShouldReturnTheCorrespondingEmailDTO() throws ParseException {
+        EmployeeEmailDto employeeEmailDto = createEmployeeEmailDto();
+        Employee employee = createEmployee();
+
+        employee.setEmail(employeeEmailDto.getEmail());
+        employee.setUid(employeeEmailDto.getUid());
+
+        EmployeeEmailDto resultedValue = employeeService.fromEntityToResponseDto(employee);
+
+        assertEquals(employeeEmailDto, resultedValue);
+    }
+
+    @Test
+    public void givenAListOfEmployeeEntities_ShouldReturnTheCorrespondingEmailDTOs() throws ParseException {
+        List<Employee> employees = generateEmployees(3);
+
+        for (Employee e : employees) {
+            e.setEmail("some_email@gmail.com");
+        }
+
+        when(employeeRepository.findEmployeeByEmail(anyString())).thenReturn(employees);
+
+        List<EmployeeEmailDto> employeeEmailDtos = employeeService.findEmployeeByEmail("some_email@gmail.com");
+
+        assertEquals(3, employeeEmailDtos.size());
+    }
+
+
 }
