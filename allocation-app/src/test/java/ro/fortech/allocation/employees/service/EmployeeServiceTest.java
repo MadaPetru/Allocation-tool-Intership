@@ -14,6 +14,7 @@ import ro.fortech.allocation.employees.dto.EmployeeDto;
 import ro.fortech.allocation.employees.exception.EmployeeNotFoundException;
 import ro.fortech.allocation.employees.model.Employee;
 import ro.fortech.allocation.employees.repository.EmployeeRepository;
+import ro.fortech.allocation.technology.dto.TechnologyDto;
 import ro.fortech.allocation.technology.model.Technology;
 import ro.fortech.allocation.technology.repository.TechnologyRepository;
 
@@ -42,13 +43,14 @@ public class EmployeeServiceTest {
     @Test
     public void save_givenEmployee_expectTheEmployee() throws ParseException {
         Technology techOne = Technology.builder().name("TechOne").build();
+        TechnologyDto techOneDto = new TechnologyDto(techOne.getName(), techOne.getExternalId());
         Set<Technology> technologySet = new HashSet<>(Arrays.asList(techOne));
-        Set<String> technologyNames = new HashSet<>(Arrays.asList("TechOne"));
+        Set<TechnologyDto> technologyDtoSet = new HashSet<>(Arrays.asList(techOneDto));
 
         EmployeeDto employeeDto = EmployeeDto.builder()
                 .email("EmployeeOne@yahoo.com")
                 .name("EmployeeOne")
-                .technologies(technologyNames)
+                .technologies(technologyDtoSet)
                 .active(true)
                 .internalPosition("Employee")
                 .startDate(new SimpleDateFormat("yyyy-MM-dd").parse("2020-05-10"))
@@ -65,7 +67,7 @@ public class EmployeeServiceTest {
                 .endDate(new SimpleDateFormat("yyyy-MM-dd").parse("2020-06-10"))
                 .build();
 
-        when(technologyRepository.findByName(any())).thenReturn(Optional.of(techOne));
+        when(technologyRepository.findByExternalId(any())).thenReturn(Optional.of(techOne));
         when(employeeRepository.save(any(Employee.class))).thenReturn(employee);
 
         EmployeeDto result = employeeService.save(employeeDto);
@@ -78,14 +80,15 @@ public class EmployeeServiceTest {
     @Test
     public void update_givenUidAndUpdatedValues_expectTheUpdatedEmployee() throws ParseException {
         Technology techOne = Technology.builder().name("TechOne").build();
+        TechnologyDto techOneDto = new TechnologyDto(techOne.getName(), techOne.getExternalId());
         Set<Technology> technologySet = new HashSet<>(Arrays.asList(techOne));
-        Set<String> technologyNames = new HashSet<>(Arrays.asList("TechOne"));
+        Set<TechnologyDto> technologyDtoSet = new HashSet<>(Arrays.asList(techOneDto));
 
         EmployeeDto employeeDto = EmployeeDto.builder()
                 .uid("22")
                 .email("EmployeeDto@yahoo.com")
                 .name("EmployeeDtoOne")
-                .technologies(technologyNames)
+                .technologies(technologyDtoSet)
                 .active(true)
                 .internalPosition("Employee")
                 .startDate(new SimpleDateFormat("yyyy-MM-dd").parse("2020-05-10"))
@@ -103,7 +106,7 @@ public class EmployeeServiceTest {
                 .endDate(employeeDto.getEndDate())
                 .build();
 
-        when(technologyRepository.findByName(any())).thenReturn(Optional.of(techOne));
+        when(technologyRepository.findByExternalId(any())).thenReturn(Optional.of(techOne));
         when(employeeRepository.findEmployeeByUid("22")).thenReturn(Optional.of(employee));
         when(employeeRepository.save(any(Employee.class))).thenReturn(employee);
 
@@ -217,8 +220,10 @@ public class EmployeeServiceTest {
 
     @Test
     public void fromDtoToEntity_givenDto_expectEntity() throws ParseException {
-        Technology technology = Technology.builder().name("TechOne").build();
-        Set<String> technologySet = new HashSet<>(Arrays.asList("TechOne"));
+        Technology techOne = Technology.builder().name("TechOne").build();
+        TechnologyDto techOneDto = new TechnologyDto(techOne.getName(), techOne.getExternalId());
+        Set<Technology> technologySet = new HashSet<>(Arrays.asList(techOne));
+        Set<TechnologyDto> technologyDtoSet = new HashSet<>(Arrays.asList(techOneDto));
 
         EmployeeDto employeeDto = EmployeeDto.builder()
                 .uid("22")
@@ -228,10 +233,10 @@ public class EmployeeServiceTest {
                 .internalPosition("aaaa")
                 .startDate(new SimpleDateFormat("yyyy-MM-dd").parse("2020-05-10"))
                 .endDate(new SimpleDateFormat("yyyy-MM-dd").parse("2020-06-10"))
-                .technologies(technologySet)
+                .technologies(technologyDtoSet)
                 .build();
 
-        when(technologyRepository.findByName(any()))
+        when(technologyRepository.findByExternalId(any()))
                 .thenReturn(Optional.ofNullable(Technology.builder()
                         .name("TechOne").build()));
 
