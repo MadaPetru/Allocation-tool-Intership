@@ -18,10 +18,7 @@ import ro.fortech.allocation.technology.model.Technology;
 import ro.fortech.allocation.technology.repository.TechnologyRepository;
 
 import javax.validation.Valid;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -75,17 +72,32 @@ public class TechnologyService {
         List<Project> projects = getProjectsWithTechnology(externalId);
 
         employees.stream().forEach(employee -> {
-            employee.setTechnologies(NULL);
-            employeeRepository.save(employee);
+            eraseTechnologyForEmployee(technology, employee);
         });
         projects.stream().forEach(project -> {
-            project.setTechnologies(NULL);
-            projectRepository.save(project);
+            eraseTechnologyForProject(technology, project);
         });
 
         repository.delete(technology);
 
         return true;
+    }
+
+    private void eraseTechnologyForEmployee(Technology technology, Employee employee) {
+        Set<Technology> set = employee.getTechnologies();
+        Set<Technology> setResult = set.stream().filter(e -> !e.getName().equals(technology.getName()))
+                .collect(Collectors.toSet());
+        employee.setTechnologies(setResult);
+        employeeRepository.save(employee);
+    }
+
+    private void eraseTechnologyForProject(Technology technology, Project project) {
+        Set<Technology> set = project.getTechnologies();
+        Set<Technology> setResult = set.stream()
+                .filter(e -> !e.getName().equals(technology.getName()))
+                .collect(Collectors.toSet());
+        project.setTechnologies(setResult);
+        projectRepository.save(project);
     }
 
     public List<TechnologyDto> findTechnologiesByName(String name){
