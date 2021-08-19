@@ -20,6 +20,7 @@ import ro.fortech.allocation.technology.repository.TechnologyRepository;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -27,6 +28,7 @@ import java.util.stream.Collectors;
 @Validated
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class TechnologyService {
+    public static final Set<Technology> NULL = null;
     private final TechnologyRepository repository;
     private final EmployeeRepository employeeRepository;
     private final ProjectRepository projectRepository;
@@ -72,9 +74,14 @@ public class TechnologyService {
         List<Employee> employees = getEmployeesWithTechnology(externalId);
         List<Project> projects = getProjectsWithTechnology(externalId);
 
-        deleteAllAssignmentsWithProjectsOrEmployees(employees, projects);
-        employeeRepository.deleteAll(employees);
-        projectRepository.deleteAll(projects);
+        employees.stream().forEach(employee -> {
+            employee.setTechnologies(NULL);
+            employeeRepository.save(employee);
+        });
+        projects.stream().forEach(project -> {
+            project.setTechnologies(NULL);
+            projectRepository.save(project);
+        });
 
         repository.delete(technology);
 
