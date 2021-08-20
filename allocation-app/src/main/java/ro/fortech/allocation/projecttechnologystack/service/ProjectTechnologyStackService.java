@@ -14,7 +14,6 @@ import ro.fortech.allocation.projecttechnologystack.exception.ProjectTechnologyS
 import ro.fortech.allocation.projecttechnologystack.model.ProjectTechnologyStack;
 import ro.fortech.allocation.projecttechnologystack.model.ProjectTechnologyStackKey;
 import ro.fortech.allocation.projecttechnologystack.repository.ProjectTechnologyStackRepository;
-import ro.fortech.allocation.technology.dto.TechnologyDto;
 import ro.fortech.allocation.technology.exception.TechnologyNotFoundByExternalIdException;
 import ro.fortech.allocation.technology.model.Technology;
 import ro.fortech.allocation.technology.repository.TechnologyRepository;
@@ -80,7 +79,7 @@ public class ProjectTechnologyStackService {
         return dto;
     }
 
-    private TechnologyDto fromTechnologyToTechnologyDto(Technology technology) {
-        return mapper.map(technology,TechnologyDto.class);
+    private ro.fortech.allocation.technology.dto.TechnologyDto fromTechnologyToTechnologyDto(Technology technology) {
+        return mapper.map(technology, ro.fortech.allocation.technology.dto.TechnologyDto.class);
     }
 }

@@ -21,7 +21,6 @@ import ro.fortech.allocation.employeestechnologystack.exception.EmployeeTechnolo
 import ro.fortech.allocation.employeestechnologystack.model.EmployeeTechnologyStack;
 import ro.fortech.allocation.employeestechnologystack.model.EmployeeTechnologyStackKey;
 import ro.fortech.allocation.employeestechnologystack.service.EmployeeTechnologyStackService;
-import ro.fortech.allocation.technology.dto.TechnologyDto;
 import ro.fortech.allocation.technology.exception.TechnologyNotFoundByExternalIdException;
 import ro.fortech.allocation.technology.model.Technology;
 
@@ -126,10 +125,10 @@ public class EmployeeTechnologyStackControllerTest {
     public void getTechnologiesOfAnEmployee_givenEmployeeExternalId_expectStatusIsOkAndTechnologies() throws Exception {
         EmployeeTechnologyStack employeeTechnologyStack = makeEntity();
         String employeeExternalId = employeeTechnologyStack.getEmployee().getUid();
-        List<TechnologyDto> technologies = new ArrayList<>();
-        technologies.add(new TechnologyDto("DtoOne", "SomeId"));
-        technologies.add(new TechnologyDto("DtoTwo", "SomeOtherId"));
-        technologies.add(new TechnologyDto("DtoThree", "ThirdId"));
+        List<ro.fortech.allocation.technology.dto.TechnologyDto> technologies = new ArrayList<>();
+        technologies.add(new ro.fortech.allocation.technology.dto.TechnologyDto("DtoOne", "SomeId"));
+        technologies.add(new ro.fortech.allocation.technology.dto.TechnologyDto("DtoTwo", "SomeOtherId"));
+        technologies.add(new ro.fortech.allocation.technology.dto.TechnologyDto("DtoThree", "ThirdId"));
         when(stackService.getAllTechnologiesByEmployeeId(any())).thenReturn(technologies);
         mockMvc.perform(get("/employeeTechnology/" + employeeExternalId))
                 .andDo(MockMvcResultHandlers.print())

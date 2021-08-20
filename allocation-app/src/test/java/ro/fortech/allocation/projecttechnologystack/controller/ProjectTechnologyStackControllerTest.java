@@ -24,7 +24,6 @@ import ro.fortech.allocation.projecttechnologystack.exception.ProjectTechnologyS
 import ro.fortech.allocation.projecttechnologystack.model.ProjectTechnologyStack;
 import ro.fortech.allocation.projecttechnologystack.model.ProjectTechnologyStackKey;
 import ro.fortech.allocation.projecttechnologystack.service.ProjectTechnologyStackService;
-import ro.fortech.allocation.technology.dto.TechnologyDto;
 import ro.fortech.allocation.technology.exception.TechnologyNotFoundByExternalIdException;
 import ro.fortech.allocation.technology.model.Technology;
 
@@ -168,7 +167,7 @@ public class ProjectTechnologyStackControllerTest {
         ProjectTechnologyStack projectTechnologyStack = makeEntity();
         ProjectTechnologyStackDto dto = mapper.map(projectTechnologyStack, ProjectTechnologyStackDto.class);
         String projectExternalId = projectTechnologyStack.getProject().getExternalId();
-        List<TechnologyDto> list = new LinkedList<>();
+        List<ro.fortech.allocation.technology.dto.TechnologyDto> list = new LinkedList<>();
         mockMvc.perform(get("/projectTechnology/" + projectExternalId)
                 .content(objectMapper.writeValueAsString(dto))
                 .contentType(MediaType.APPLICATION_JSON));
@@ -179,7 +178,7 @@ public class ProjectTechnologyStackControllerTest {
         ProjectTechnologyStack projectTechnologyStack = makeEntity();
         ProjectTechnologyStackDto dto = mapper.map(projectTechnologyStack, ProjectTechnologyStackDto.class);
         String projectExternalId = projectTechnologyStack.getProject().getExternalId();
-        List<TechnologyDto> list = new LinkedList<>();
+        List<ro.fortech.allocation.technology.dto.TechnologyDto> list = new LinkedList<>();
         mockMvc.perform(get("/projectTechnology/" + projectExternalId)
                 .content(objectMapper.writeValueAsString(dto))
                 .contentType(MediaType.APPLICATION_JSON))

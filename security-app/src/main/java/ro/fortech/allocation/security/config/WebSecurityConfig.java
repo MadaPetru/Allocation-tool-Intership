@@ -23,7 +23,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             "/v2/api-docs",
             "/swagger-resources/**",
             "/swagger-ui.html/**",
-            "/webjars/**"
+            "/webjars/**",
+            "/h2-console/**"
     };
 
     private final UserDetailsService userDetailService;
@@ -50,6 +51,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .anyRequest()
                 .authenticated();
 
+        http.headers().frameOptions().disable();
         http.addFilterBefore(authenticationTokenFilter, UsernamePasswordAuthenticationFilter.class);
     }
 

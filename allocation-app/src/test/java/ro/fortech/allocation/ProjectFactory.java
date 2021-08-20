@@ -57,7 +57,8 @@ public class ProjectFactory {
                 .externalId("AAA1122")
                 .build();
     }
-    public static Set<TechnologyDto> getSetTechnologyDto(){
+
+    public static Set<TechnologyDto> getSetTechnologyDto() {
         Technology technology = new Technology();
         technology.setName("name");
         technology.setExternalId("externalId");
@@ -70,7 +71,8 @@ public class ProjectFactory {
         technologySetDto.add(technologyDto);
         return technologySetDto;
     }
-    public static Set<Technology> getSetTechnology(){
+
+    public static Set<Technology> getSetTechnology() {
         Technology technology = new Technology();
         technology.setName("name");
         technology.setExternalId("externalId");

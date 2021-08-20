@@ -4,8 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ro.fortech.allocation.project.model.Project;
-import ro.fortech.allocation.technology.model.Technology;
 
 import javax.persistence.*;
 import java.io.Serializable;

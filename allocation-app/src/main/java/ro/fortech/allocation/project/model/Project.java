@@ -3,7 +3,6 @@ package ro.fortech.allocation.project.model;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.*;
-import ro.fortech.allocation.projecttechnologystack.model.ProjectTechnologyStack;
 import ro.fortech.allocation.technology.model.Technology;
 import ro.fortech.allocation.assignments.model.Assignment;
 

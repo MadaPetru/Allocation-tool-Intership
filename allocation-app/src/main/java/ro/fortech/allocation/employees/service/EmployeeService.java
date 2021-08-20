@@ -47,25 +47,25 @@ public class EmployeeService {
         employeeRepository.saveAll(CsvHelper.csvToEmployees(file.getInputStream()));
     }
 
-    public EmployeeDto update(@Valid EmployeeDto employeeDto, String Uid) {
-        Employee oldEmployee = employeeRepository.findEmployeeByUid(Uid).orElseThrow(() -> new EmployeeNotFoundException(Uid));
+    public EmployeeDto update(@Valid EmployeeDto employeeDto, String employeeUid) {
+        Employee oldEmployee = employeeRepository.findEmployeeByUid(employeeUid).orElseThrow(() -> new EmployeeNotFoundException(employeeUid));
         Employee updatedEmployee = fromDtoToEntity(employeeDto);
         updatedEmployee.setId(oldEmployee.getId());
         updatedEmployee.setUid(oldEmployee.getUid());
         return fromEntityToDto(employeeRepository.save(updatedEmployee));
     }
 
-    public EmployeeDto findByUid(String uid) {
-        return fromEntityToDto(employeeRepository.findEmployeeByUid(uid).orElseThrow(() -> new EmployeeNotFoundException(uid)));
+    public EmployeeDto findByUid(String employeeUid) {
+        return fromEntityToDto(employeeRepository.findEmployeeByUid(employeeUid).orElseThrow(() -> new EmployeeNotFoundException(employeeUid)));
     }
 
     public Page<EmployeeDto> findAll(Pageable pageable) {
         return employeeRepository.findAll(pageable).map(this::fromEntityToDto);
     }
 
-    public void deleteByUid(String uid) {
+    public void deleteByUid(String employeeUid) {
 
-        Employee employee = employeeRepository.findEmployeeByUid(uid).orElseThrow(() -> new EmployeeNotFoundException(uid));
+        Employee employee = employeeRepository.findEmployeeByUid(employeeUid).orElseThrow(() -> new EmployeeNotFoundException(employeeUid));
         assignmentRepository.deleteAll(assignmentRepository.findAssignmentsByEmployee(employee));
 
         employeeRepository.delete(employee);
@@ -138,5 +138,15 @@ public class EmployeeService {
     private Technology searchForTechnology(String externalID) {
         return technologyRepository.findByExternalId(externalID)
                 .orElseThrow(() -> new TechnologyNotFoundByExternalIdException(externalID));
+    }
+
+    public EmployeeDto addTechnologyToEmployee(String employeeUid, String externalID) {
+        Employee employee = employeeRepository.findEmployeeByUid(employeeUid).orElseThrow(() -> new EmployeeNotFoundException(employeeUid));
+        Technology technology = technologyRepository.findByExternalId(externalID).orElseThrow(() -> new TechnologyNotFoundByExternalIdException(externalID));
+
+        Set<Technology> technologies = employee.getTechnologies();
+        technologies.add(technology);
+
+        return fromEntityToDto(employeeRepository.save(employee));
     }
 }
