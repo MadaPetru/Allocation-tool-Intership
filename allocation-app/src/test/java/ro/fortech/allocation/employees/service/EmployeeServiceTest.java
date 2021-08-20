@@ -11,6 +11,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import ro.fortech.allocation.assignments.repository.AssignmentRepository;
 import ro.fortech.allocation.employees.dto.EmployeeDto;
+import ro.fortech.allocation.employees.dto.EmployeeEmailDto;
 import ro.fortech.allocation.employees.exception.EmployeeNotFoundException;
 import ro.fortech.allocation.employees.model.Employee;
 import ro.fortech.allocation.employees.repository.EmployeeRepository;
@@ -21,13 +22,13 @@ import ro.fortech.allocation.technology.repository.TechnologyRepository;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static ro.fortech.allocation.EmployeeFactory.createEmployee;
-import static ro.fortech.allocation.EmployeeFactory.createEmployeeDto;
+import static ro.fortech.allocation.EmployeeFactory.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class EmployeeServiceTest {
@@ -197,4 +198,34 @@ public class EmployeeServiceTest {
         verify(employeeRepository, times(1)).findEmployeeByUid(employee.getUid());
         verify(employeeRepository, times(1)).save(employee);
     }
+
+    @Test
+    public void givenAnEntity_ShouldReturnTheCorrespondingEmailDTO() throws ParseException {
+        EmployeeEmailDto employeeEmailDto = createEmployeeEmailDto();
+        Employee employee = createEmployee();
+
+        employee.setEmail(employeeEmailDto.getEmail());
+        employee.setUid(employeeEmailDto.getUid());
+
+        EmployeeEmailDto resultedValue = employeeService.fromEntityToResponseDto(employee);
+
+        assertEquals(employeeEmailDto, resultedValue);
+    }
+
+    @Test
+    public void givenAListOfEmployeeEntities_ShouldReturnTheCorrespondingEmailDTOs() throws ParseException {
+        List<Employee> employees = generateEmployees(3);
+
+        for (Employee e : employees) {
+            e.setEmail("some_email@gmail.com");
+        }
+
+        when(employeeRepository.findEmployeeByEmail(anyString())).thenReturn(employees);
+
+        List<EmployeeEmailDto> employeeEmailDtos = employeeService.findEmployeeByEmail("some_email@gmail.com");
+
+        assertEquals(3, employeeEmailDtos.size());
+    }
+
+
 }

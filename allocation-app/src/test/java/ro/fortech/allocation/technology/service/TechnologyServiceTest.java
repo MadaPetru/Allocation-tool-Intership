@@ -11,6 +11,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import ro.fortech.allocation.employees.repository.EmployeeRepository;
 import ro.fortech.allocation.project.repository.ProjectRepository;
+import ro.fortech.allocation.technology.dto.TechnologyDto;
 import ro.fortech.allocation.technology.exception.TechnologyAlreadyExistsInTheDatabase;
 import ro.fortech.allocation.technology.exception.TechnologyNotFoundByExternalIdException;
 import ro.fortech.allocation.technology.model.Technology;
@@ -21,24 +22,25 @@ import java.util.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TechnologyServiceTest {
     @InjectMocks
-    TechnologyService service;
+    private TechnologyService service;
 
     @Mock
-    TechnologyRepository repository;
+    private TechnologyRepository repository;
 
     @Mock
-    EmployeeRepository employeeRepository;
+    private EmployeeRepository employeeRepository;
 
     @Mock
-    ProjectRepository projectRepository;
+    private ProjectRepository projectRepository;
 
     @Test
-    public void findTechnologiesByName_givenName_expectTechnologies(){
+    public void findTechnologiesByName_givenName_expectTechnologies() {
         Technology tech = Technology.builder()
                 .externalId("externalId")
                 .id(1L)
@@ -49,7 +51,7 @@ public class TechnologyServiceTest {
         when(repository.findTechnologyByName(any(String.class))).thenReturn(list);
         service.findTechnologiesByName(tech.getName());
         verify(repository).findTechnologyByName(tech.getName());
-        assertEquals(1,service.findTechnologiesByName(tech.getName()).size());
+        assertEquals(1, service.findTechnologiesByName(tech.getName()).size());
     }
 
     @Test
@@ -58,18 +60,17 @@ public class TechnologyServiceTest {
                 .name("tech")
                 .externalId("externalId")
                 .build();
-        ro.fortech.allocation.technology.dto.TechnologyDto dto = ro.fortech.allocation.technology.dto.TechnologyDto.builder()
+        TechnologyDto dto = TechnologyDto.builder()
                 .name("tech")
                 .externalId("externalId")
                 .build();
 
         when(repository.save(any(Technology.class))).thenReturn(tech);
-        ro.fortech.allocation.technology.dto.TechnologyDto savedTech = service.add(dto);
+        TechnologyDto savedTech = service.add(dto);
         dto.setExternalId(savedTech.getExternalId());
         verify(repository).save(any(Technology.class));
         assertThat(savedTech.getName()).isEqualTo(dto.getName());
         assertThat(savedTech.getExternalId()).isEqualTo(dto.getExternalId());
-
     }
 
     @Test
@@ -78,15 +79,15 @@ public class TechnologyServiceTest {
                 .name("tech")
                 .externalId("externalId")
                 .build();
-        ro.fortech.allocation.technology.dto.TechnologyDto dto = ro.fortech.allocation.technology.dto.TechnologyDto.builder()
+        TechnologyDto dto = TechnologyDto.builder()
                 .name("tech")
                 .externalId("externalId")
                 .build();
-        Pageable page = PageRequest.of(3,3);
+        Pageable page = PageRequest.of(3, 3);
         Page<Technology> pageTech = new PageImpl<>(Collections.singletonList(tech));
         when(repository.findAll(page)).thenReturn(pageTech);
-        Page<ro.fortech.allocation.technology.dto.TechnologyDto> pageResult = service.findAll(page);
-        assertEquals(pageResult.getTotalElements(),pageTech.getTotalElements());
+        Page<TechnologyDto> pageResult = service.findAll(page);
+        assertEquals(pageResult.getTotalElements(), pageTech.getTotalElements());
     }
 
     @Test
@@ -95,14 +96,14 @@ public class TechnologyServiceTest {
                 .name("tech")
                 .externalId("externalId")
                 .build();
-        ro.fortech.allocation.technology.dto.TechnologyDto dto = ro.fortech.allocation.technology.dto.TechnologyDto.builder()
+        TechnologyDto dto = TechnologyDto.builder()
                 .name("tech")
                 .externalId("externalId")
                 .build();
         when(repository.findByExternalId(any(String.class))).thenReturn(java.util.Optional.ofNullable(tech));
         when(repository.save(any(Technology.class))).thenReturn(tech);
 
-        ro.fortech.allocation.technology.dto.TechnologyDto updatedTech = service.update(dto,dto.getExternalId());
+        TechnologyDto updatedTech = service.update(dto, dto.getExternalId());
         verify(repository).save(any(Technology.class));
         assertThat(updatedTech.getName()).isEqualTo(dto.getName());
         assertThat(updatedTech.getExternalId()).isEqualTo(dto.getExternalId());
@@ -114,24 +115,24 @@ public class TechnologyServiceTest {
                 .name("tech")
                 .externalId("externalId")
                 .build();
-        ro.fortech.allocation.technology.dto.TechnologyDto dto = ro.fortech.allocation.technology.dto.TechnologyDto.builder()
+        TechnologyDto dto = TechnologyDto.builder()
                 .name("tech")
                 .externalId("externalId")
                 .build();
         when(repository.findByExternalId(any(String.class))).thenReturn(java.util.Optional.ofNullable(tech));
-        ro.fortech.allocation.technology.dto.TechnologyDto foundedTech = service.findByExternalId(dto.getExternalId());
+        TechnologyDto foundedTech = service.findByExternalId(dto.getExternalId());
         verify(repository).findByExternalId(dto.getExternalId());
         assertThat(foundedTech.getExternalId()).isEqualTo(dto.getExternalId());
         assertThat(foundedTech.getName()).isEqualTo(dto.getName());
     }
 
     @Test
-    public void deleteByExternalId_givenExternalId_ExpectedTrue(){
+    public void deleteByExternalId_givenExternalId_ExpectedTrue() {
         Technology tech = Technology.builder()
                 .name("tech")
                 .externalId("externalId")
                 .build();
-        ro.fortech.allocation.technology.dto.TechnologyDto dto = ro.fortech.allocation.technology.dto.TechnologyDto.builder()
+        TechnologyDto dto = TechnologyDto.builder()
                 .name("tech")
                 .externalId("externalId")
                 .build();
@@ -142,23 +143,23 @@ public class TechnologyServiceTest {
 
         Boolean expected = service.deleteByExternalId(dto.getExternalId());
         verify(repository).delete(tech);
-        assertEquals(true,expected);
+        assertEquals(true, expected);
     }
 
     @Test
-    public void technologyToDtoTest(){
+    public void technologyToDtoTest() {
         Technology tech = Technology.builder()
                 .name("tech")
                 .externalId("externalId")
                 .build();
-        ro.fortech.allocation.technology.dto.TechnologyDto dto = service.technologyToDto(tech);
+        TechnologyDto dto = service.technologyToDto(tech);
         assertThat(dto.getName()).isEqualTo(tech.getName());
         assertThat(dto.getExternalId()).isEqualTo(tech.getExternalId());
     }
 
     @Test
-    public void dtoToTechnologyTest(){
-        ro.fortech.allocation.technology.dto.TechnologyDto dto = ro.fortech.allocation.technology.dto.TechnologyDto.builder()
+    public void dtoToTechnologyTest() {
+        TechnologyDto dto = TechnologyDto.builder()
                 .name("tech")
                 .externalId("externalId")
                 .build();
@@ -168,58 +169,54 @@ public class TechnologyServiceTest {
     }
 
     @Test(expected = TechnologyNotFoundByExternalIdException.class)
-    public void findByExternalId_givenExternalId_expectedTechnologyNotFoundByExternalIdException(){
-        ro.fortech.allocation.technology.dto.TechnologyDto dto = makeDto();
+    public void findByExternalId_givenExternalId_expectedTechnologyNotFoundByExternalIdException() {
+        TechnologyDto dto = makeDto();
         dto.setExternalId("tech");
         when(repository.findByExternalId(any(String.class))).thenReturn(Optional.empty());
         service.findByExternalId(dto.getExternalId());
     }
 
     @Test(expected = TechnologyNotFoundByExternalIdException.class)
-    public void deleteByExternalId_givenExternalId_expectedTechnologyNotFoundByExternalIdException(){
+    public void deleteByExternalId_givenExternalId_expectedTechnologyNotFoundByExternalIdException() {
         Technology tech = makeTechnology();
         tech.setExternalId("tech");
         when(repository.findByExternalId(any(String.class))).thenReturn(Optional.empty());
         service.deleteByExternalId(tech.getExternalId());
     }
 
-
-
     @Test(expected = TechnologyAlreadyExistsInTheDatabase.class)
-    public void updateTechnology_givenTechnology_expectTechnologyAlreadyExistInDatabase(){
+    public void updateTechnology_givenTechnology_expectTechnologyAlreadyExistInDatabase() {
         Technology tech = makeTechnology();
-        ro.fortech.allocation.technology.dto.TechnologyDto dto = makeDto();
+        TechnologyDto dto = makeDto();
         dto.setExternalId("tech");
         tech.setExternalId("tech");
         when(repository.findByExternalId(any(String.class))).thenReturn(Optional.of(tech));
         when(repository.findByName(any(String.class))).thenReturn(Optional.of(tech));
-        service.update(dto,dto.getExternalId());
+        service.update(dto, dto.getExternalId());
     }
 
     @Test(expected = TechnologyNotFoundByExternalIdException.class)
-    public void updateTechnology_givenTechnology_expectTechnologyNotFoundByExternalId(){
-        ro.fortech.allocation.technology.dto.TechnologyDto dto = makeDto();
+    public void updateTechnology_givenTechnology_expectTechnologyNotFoundByExternalId() {
+        TechnologyDto dto = makeDto();
         dto.setExternalId("tech");
         when(repository.findByExternalId(any(String.class))).thenReturn(Optional.empty());
-        service.update(dto,dto.getExternalId());
+        service.update(dto, dto.getExternalId());
     }
 
-
-
     @Test(expected = TechnologyAlreadyExistsInTheDatabase.class)
-    public void addTechnology_givenTechnology_expectTechnologyAlreadyExistInTheDatabase(){
-        ro.fortech.allocation.technology.dto.TechnologyDto request = makeDto();
+    public void addTechnology_givenTechnology_expectTechnologyAlreadyExistInTheDatabase() {
+        TechnologyDto request = makeDto();
         when(repository.save(any(Technology.class))).thenThrow(TechnologyAlreadyExistsInTheDatabase.class);
         service.add(request);
     }
 
-    private ro.fortech.allocation.technology.dto.TechnologyDto makeDto(){
-        return ro.fortech.allocation.technology.dto.TechnologyDto.builder()
+    private TechnologyDto makeDto() {
+        return TechnologyDto.builder()
                 .name("tech")
                 .build();
     }
 
-    private Technology makeTechnology(){
+    private Technology makeTechnology() {
         return Technology.builder()
                 .name("tech")
                 .build();
