@@ -24,9 +24,8 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import ro.fortech.allocation.employees.dto.EmployeeDto;
 import ro.fortech.allocation.employees.dto.EmployeeEmailDto;
-import ro.fortech.allocation.employees.model.Employee;
 import ro.fortech.allocation.employees.service.EmployeeService;
-import ro.fortech.allocation.technology.model.Technology;
+import ro.fortech.allocation.technology.dto.TechnologyDto;
 
 import javax.validation.ConstraintViolation;
 import java.text.ParseException;
@@ -38,7 +37,6 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static ro.fortech.allocation.EmployeeFactory.createEmployee;
 import static ro.fortech.allocation.EmployeeFactory.createEmployeeDto;
 
 @SpringBootTest
@@ -189,18 +187,23 @@ public class EmployeeControllerTest {
         verify(employeeService).update(employeeDto, employeeDto.getUid());
     }
 
-//    public void addTechnologyToEmployee_expectEmployeeWithAddedTechnology() throws Exception {
-//        Employee employee = createEmployee();
-//        EmployeeDto employeeDto = createEmployeeDto();
-//        Technology techOne = Technology.builder().name("TechOne").externalId("ExternalID").build();
-//
-//        when(employeeService.addTechnologyToEmployee(employee.getUid(), techOne.getExternalId())).thenReturn(employeeDto);
-//
-//        mockMvc.perform(patch("/employees/" + employee.getUid())
-//                        .contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$0.technologies"))
-//    }
+    @Test
+    public void addTechnologyToEmployee_expectEmployeeWithAddedTechnology() throws Exception {
+        EmployeeDto employeeDto = createEmployeeDto();
+        TechnologyDto someTech = TechnologyDto.builder().name("SomeTech").externalId("SomeExternalUID").build();
+
+        employeeDto.getTechnologies().add(someTech);
+
+        Iterator iterator = employeeDto.getTechnologies().iterator();
+
+        when(employeeService.addTechnologyToEmployee(employeeDto.getUid(), someTech.getExternalId())).thenReturn(employeeDto);
+
+        mockMvc.perform(patch("/employees/" + employeeDto.getUid())
+                        .param("externalId", "SomeExternalUID"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.technologies[0]").value(iterator.next()))
+                .andExpect(jsonPath("$.technologies[1]").value(iterator.next()));
+    }
 
     private EmployeeDto makeDto() throws ParseException {
         return EmployeeDto.builder()
