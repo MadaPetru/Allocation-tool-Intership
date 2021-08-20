@@ -24,7 +24,9 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import ro.fortech.allocation.employees.dto.EmployeeDto;
 import ro.fortech.allocation.employees.dto.EmployeeEmailDto;
+import ro.fortech.allocation.employees.model.Employee;
 import ro.fortech.allocation.employees.service.EmployeeService;
+import ro.fortech.allocation.technology.model.Technology;
 
 import javax.validation.ConstraintViolation;
 import java.text.ParseException;
@@ -36,6 +38,8 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static ro.fortech.allocation.EmployeeFactory.createEmployee;
+import static ro.fortech.allocation.EmployeeFactory.createEmployeeDto;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -136,7 +140,7 @@ public class EmployeeControllerTest {
         when(employeeService.findByUid(Mockito.anyString())).thenReturn(response);
 
         MvcResult mvcResult = mockMvc.perform(get("/employees/" + request.getUid())
-                .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
         EmployeeDto result = mapper.readValue(mvcResult.getResponse().getContentAsString(), new TypeReference<EmployeeDto>() {
@@ -151,8 +155,8 @@ public class EmployeeControllerTest {
         when(employeeService.save(Mockito.any(EmployeeDto.class))).thenReturn(request);
 
         mockMvc.perform(post("/employees")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsString(request)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.name").value(request.getName()))
                 .andExpect(jsonPath("$.email").value(request.getEmail()))
@@ -164,7 +168,7 @@ public class EmployeeControllerTest {
     public void deleteEmployee_givenUid_expectStatusOk() throws Exception {
         EmployeeDto employeeDto = makeDto();
         mockMvc.perform(delete("/employees/" + employeeDto.getUid())
-                .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
         verify(employeeService).deleteByUid(employeeDto.getUid());
@@ -175,8 +179,8 @@ public class EmployeeControllerTest {
         EmployeeDto employeeDto = makeDto();
         when(employeeService.update(Mockito.any(EmployeeDto.class), Mockito.anyString())).thenReturn(employeeDto);
         mockMvc.perform(put("/employees/" + employeeDto.getUid())
-                .content(mapper.writeValueAsString(employeeDto))
-                .contentType(MediaType.APPLICATION_JSON))
+                        .content(mapper.writeValueAsString(employeeDto))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value(employeeDto.getName()))
                 .andExpect(jsonPath("$.email").value(employeeDto.getEmail()))
@@ -185,6 +189,18 @@ public class EmployeeControllerTest {
         verify(employeeService).update(employeeDto, employeeDto.getUid());
     }
 
+//    public void addTechnologyToEmployee_expectEmployeeWithAddedTechnology() throws Exception {
+//        Employee employee = createEmployee();
+//        EmployeeDto employeeDto = createEmployeeDto();
+//        Technology techOne = Technology.builder().name("TechOne").externalId("ExternalID").build();
+//
+//        when(employeeService.addTechnologyToEmployee(employee.getUid(), techOne.getExternalId())).thenReturn(employeeDto);
+//
+//        mockMvc.perform(patch("/employees/" + employee.getUid())
+//                        .contentType(MediaType.APPLICATION_JSON))
+//                .andExpect(status().isOk())
+//                .andExpect(jsonPath("$0.technologies"))
+//    }
 
     private EmployeeDto makeDto() throws ParseException {
         return EmployeeDto.builder()
