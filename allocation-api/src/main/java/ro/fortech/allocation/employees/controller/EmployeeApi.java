@@ -87,8 +87,8 @@ public interface EmployeeApi {
     @PatchMapping(path = "/{employeeUid}")
     @ApiOperation(value = "Add a technology to an employee")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Successfully added role to the employee"),
+            @ApiResponse(code = 200, message = "Successfully added technology to the employee"),
             @ApiResponse(code = 400, message = "Bad request")
     })
-    ResponseEntity<EmployeeDto> addTechnologyToEmployee(@PathVariable String employeeUid, @RequestParam String externalId);
+    ResponseEntity<EmployeeDto> addTechnologyToEmployee(@PathVariable String employeeUid, @RequestParam String technologyUid);
 }

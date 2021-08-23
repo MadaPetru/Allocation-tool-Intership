@@ -80,6 +80,19 @@ public class EmployeeService {
         return employeeResponseDtoList;
     }
 
+
+    public EmployeeDto addTechnologyToEmployee(String employeeUid, String externalID) {
+        Employee employee = employeeRepository.findEmployeeByUid(employeeUid).orElseThrow(() -> new EmployeeNotFoundException(employeeUid));
+        Technology technology = technologyRepository.findByExternalId(externalID).orElseThrow(() -> new TechnologyNotFoundByExternalIdException(externalID));
+
+        Set<Technology> technologies = employee.getTechnologies();
+        technologies.add(technology);
+
+        employee.setTechnologies(technologies);
+
+        return fromEntityToDto(employeeRepository.save(employee));
+    }
+
     public EmployeeEmailDto fromEntityToResponseDto(Employee employee) {
         return EmployeeEmailDto.builder()
                 .email(employee.getEmail())
@@ -138,17 +151,5 @@ public class EmployeeService {
     private Technology searchForTechnology(String externalID) {
         return technologyRepository.findByExternalId(externalID)
                 .orElseThrow(() -> new TechnologyNotFoundByExternalIdException(externalID));
-    }
-
-    public EmployeeDto addTechnologyToEmployee(String employeeUid, String externalID) {
-        Employee employee = employeeRepository.findEmployeeByUid(employeeUid).orElseThrow(() -> new EmployeeNotFoundException(employeeUid));
-        Technology technology = technologyRepository.findByExternalId(externalID).orElseThrow(() -> new TechnologyNotFoundByExternalIdException(externalID));
-
-        Set<Technology> technologies = employee.getTechnologies();
-        technologies.add(technology);
-
-        employee.setTechnologies(technologies);
-
-        return fromEntityToDto(employeeRepository.save(employee));
     }
 }

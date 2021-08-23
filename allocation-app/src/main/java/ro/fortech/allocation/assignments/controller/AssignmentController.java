@@ -33,7 +33,7 @@ public class AssignmentController implements AssignmentApi {
     }
 
     @Override
-    public ResponseEntity<AssignmentResponseDto> editAssignment(AssignmentRequestDto assignmentDto, String assignmentUid) throws ParseException { //, String assignmentUid
+    public ResponseEntity<AssignmentResponseDto> editAssignment(AssignmentRequestDto assignmentDto, String assignmentUid) throws ParseException {
         return new ResponseEntity<>(assignmentService.update(assignmentDto, assignmentUid), HttpStatus.OK);
     }
 

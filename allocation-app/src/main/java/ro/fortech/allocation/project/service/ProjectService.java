@@ -20,6 +20,7 @@ import ro.fortech.allocation.project.model.Project;
 import ro.fortech.allocation.project.repository.ProjectRepository;
 import ro.fortech.allocation.technology.dto.TechnologyDto;
 import ro.fortech.allocation.technology.exception.TechnologyNotFoundByExternalIdException;
+import ro.fortech.allocation.technology.model.Technology;
 import ro.fortech.allocation.technology.repository.TechnologyRepository;
 
 import java.io.IOException;
@@ -102,6 +103,18 @@ public class ProjectService {
 
         result.setAssignments(assignmentDtoList);
         return result;
+    }
+
+    public ProjectResponseDto addTechnologyToProject(String externalId, String technologyUid){
+        Project project = projectRepository.findProjectByExternalId(externalId).orElseThrow(()-> new ProjectNotFoundException(externalId));
+        Technology technology = technologyRepository.findByExternalId(technologyUid).orElseThrow(() -> new TechnologyNotFoundByExternalIdException(technologyUid));
+
+        Set<Technology> technologies = project.getTechnologies();
+        technologies.add(technology);
+
+        project.setTechnologies(technologies);
+
+        return toProjectResponseDto(projectRepository.save(project));
     }
 
     private ProjectResponseDto toProjectResponseDto(Project project) {

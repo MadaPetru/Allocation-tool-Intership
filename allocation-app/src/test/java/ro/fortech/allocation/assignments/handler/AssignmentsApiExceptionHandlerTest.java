@@ -83,7 +83,7 @@ public class AssignmentsApiExceptionHandlerTest {
                 .projectUid("")
                 .employeeUid("")
                 .projectPosition("")
-                .allocationHours(-1)
+                .allocationHours(-1.2)
                 .build();
     }
 }

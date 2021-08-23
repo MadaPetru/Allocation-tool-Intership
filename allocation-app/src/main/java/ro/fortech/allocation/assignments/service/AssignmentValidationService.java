@@ -53,14 +53,14 @@ public class AssignmentValidationService {
         isPeriodValid(updatedAssignment.getEmployeeUid(), updatedAssignment.getProjectUid(), updatedAssignment.getStartDate(), updatedAssignment.getEndDate());
     }
 
-    private void isEmployeeAvailable(String uid, Integer requiredHours, Date startDate, Date endDate) {
+    private void isEmployeeAvailable(String uid, Double requiredHours, Date startDate, Date endDate) {
         Employee employee = employeeRepository.findEmployeeByUid(uid).orElseThrow(() -> new EmployeeNotFoundException(uid));
         List<Assignment> activeAssignmentsList = assignmentRepository.findAssignmentsByEmployee(employee).stream().filter(e -> e.getEndDate().after(startDate) && e.getStartDate().before(endDate)).sorted(Comparator.comparing(Assignment::getStartDate, Date::compareTo)).collect(Collectors.toList());
         if(activeAssignmentsList.isEmpty() && employee.getWorkingHours()<requiredHours){
             throw new EmployeeNotAvailableException(uid);
         }
         for (Assignment assignment : activeAssignmentsList) {
-            Integer currentWorkingHoursForAssignmentPeriod = getWorkingHoursDuringPeriodOfAssignment(assignment, activeAssignmentsList);
+            Double currentWorkingHoursForAssignmentPeriod = getWorkingHoursDuringPeriodOfAssignment(assignment, activeAssignmentsList);
             if (employee.getWorkingHours() - currentWorkingHoursForAssignmentPeriod < requiredHours)
                 throw new EmployeeNotAvailableException(uid);
         }
@@ -90,8 +90,10 @@ public class AssignmentValidationService {
         }
     }
 
-    private Integer getWorkingHoursDuringPeriodOfAssignment(Assignment assignment, List<Assignment> allAssignments) {
-        return allAssignments.stream().filter(e -> !assignment.getStartDate().after(e.getStartDate()) && !assignment.getEndDate().before(e.getStartDate())).map(Assignment::getAllocationHours).mapToInt(Integer::valueOf).sum();
+    private Double getWorkingHoursDuringPeriodOfAssignment(Assignment assignment, List<Assignment> allAssignments) {
+        return allAssignments.stream().
+                filter(e -> !assignment.getStartDate().after(e.getStartDate()) && !assignment.getEndDate().before(e.getStartDate()))
+                .map(Assignment::getAllocationHours).mapToDouble(Double::valueOf).sum();
     }
 
     private boolean isAssignmentPeriodIntersectingWithOtherAssignmentsOnSameProject(Date startDate, Date endDate, List<Assignment> assignmentList) {

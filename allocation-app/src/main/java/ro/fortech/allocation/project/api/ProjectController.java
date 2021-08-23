@@ -6,10 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ro.fortech.allocation.project.controller.ProjectApi;
 import ro.fortech.allocation.project.dto.ProjectAssignmentsDto;
@@ -23,7 +20,7 @@ import java.io.IOException;
 @CrossOrigin
 @RestController
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class ProjectApiController implements ProjectApi {
+public class ProjectController implements ProjectApi {
     private final ProjectService projectService;
 
     @Override
@@ -62,5 +59,10 @@ public class ProjectApiController implements ProjectApi {
     public ResponseEntity<?> uploadFile(MultipartFile file) throws IOException {
         projectService.save(file);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<ProjectResponseDto> addTechnologyToProject(@PathVariable String projectUid, @RequestParam String technologyUid) {
+        return ResponseEntity.ok(projectService.addTechnologyToProject(projectUid, technologyUid));
     }
 }

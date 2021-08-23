@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 import ro.fortech.allocation.employees.dto.EmployeeDto;
 import ro.fortech.allocation.employees.dto.EmployeeEmailDto;
 import ro.fortech.allocation.employees.service.EmployeeService;
+import ro.fortech.allocation.project.dto.ProjectResponseDto;
 
 import javax.validation.Valid;
 import java.io.IOException;
@@ -63,7 +64,7 @@ public class EmployeeController implements EmployeeApi {
     }
 
     @Override
-    public ResponseEntity<EmployeeDto> addTechnologyToEmployee(String employeeUid, String externalId) {
-        return ResponseEntity.ok(employeeService.addTechnologyToEmployee(employeeUid, externalId));
+    public ResponseEntity<EmployeeDto> addTechnologyToEmployee(@PathVariable String employeeUid, @RequestParam String technologyUid) {
+        return ResponseEntity.ok(employeeService.addTechnologyToEmployee(employeeUid, technologyUid));
     }
 }

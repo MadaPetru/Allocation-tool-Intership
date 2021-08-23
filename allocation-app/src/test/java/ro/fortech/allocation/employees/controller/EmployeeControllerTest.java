@@ -199,7 +199,7 @@ public class EmployeeControllerTest {
         when(employeeService.addTechnologyToEmployee(employeeDto.getUid(), someTech.getExternalId())).thenReturn(employeeDto);
 
         mockMvc.perform(patch("/employees/" + employeeDto.getUid())
-                        .param("externalId", "SomeExternalUID"))
+                        .param("technologyUid", "SomeExternalUID"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.technologies[0]").value(iterator.next()))
                 .andExpect(jsonPath("$.technologies[1]").value(iterator.next()));

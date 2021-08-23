@@ -40,6 +40,6 @@ public class Assignment {
     private String projectPosition;
 
     @Column(nullable = false, name = "hours")
-    private Integer allocationHours;
+    private Double allocationHours;
 
 }

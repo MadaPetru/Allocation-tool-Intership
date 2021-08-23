@@ -66,7 +66,7 @@ public class AssignmentServiceTest {
                 .startDate(new SimpleDateFormat("yyyy-MM-dd").parse("2001-11-11"))
                 .endDate(new SimpleDateFormat("yyyy-MM-dd").parse("2010-11-11"))
                 .projectPosition("junior")
-                .allocationHours(6)
+                .allocationHours(6.0)
                 .employeeUid("123")
                 .projectUid("123")
                 .build();
@@ -76,7 +76,7 @@ public class AssignmentServiceTest {
                 .endDate(new SimpleDateFormat("yyyy-MM-dd").parse("2010-11-11"))
                 .projectPosition("junior")
                 .employeeDto(employeeDto)
-                .allocationHours(6)
+                .allocationHours(6.0)
                 .projectUid("123")
                 .build();
 
@@ -86,7 +86,7 @@ public class AssignmentServiceTest {
                 .projectPosition("junior")
                 .employee(employee)
                 .project(project)
-                .allocationHours(6)
+                .allocationHours(6.0)
                 .build();
 
         when(employeeRepository.findEmployeeByUid(anyString())).thenReturn(Optional.of(employee));
@@ -114,7 +114,7 @@ public class AssignmentServiceTest {
                 .startDate(new SimpleDateFormat("yyyy-MM-dd").parse("2001-11-11"))
                 .endDate(new SimpleDateFormat("yyyy-MM-dd").parse("2010-11-11"))
                 .projectPosition("junior")
-                .allocationHours(6)
+                .allocationHours(6.2)
                 .employeeUid("123")
                 .projectUid("123")
                 .uid("1234")
@@ -125,7 +125,7 @@ public class AssignmentServiceTest {
                 .endDate(new SimpleDateFormat("yyyy-MM-dd").parse("2010-11-11"))
                 .projectPosition("junior")
                 .employeeDto(employeeDto)
-                .allocationHours(6)
+                .allocationHours(6.0)
                 .projectUid("123")
                 .build();
 
@@ -135,7 +135,7 @@ public class AssignmentServiceTest {
                 .projectPosition("junior")
                 .employee(employee)
                 .project(project)
-                .allocationHours(6)
+                .allocationHours(6.2)
                 .uid("1234")
                 .build();
 
@@ -167,7 +167,7 @@ public class AssignmentServiceTest {
                 .projectPosition("junior")
                 .employee(employee)
                 .project(project)
-                .allocationHours(6)
+                .allocationHours(6.2)
                 .uid("1234")
                 .build();
 
@@ -194,7 +194,7 @@ public class AssignmentServiceTest {
                 .startDate(new SimpleDateFormat("yyyy-MM-dd").parse("2001-11-11"))
                 .endDate(new SimpleDateFormat("yyyy-MM-dd").parse("2010-11-11"))
                 .projectPosition("junior")
-                .allocationHours(6)
+                .allocationHours(6.2)
                 .employeeUid("123")
                 .projectUid("123")
                 .uid("1234")
@@ -206,7 +206,7 @@ public class AssignmentServiceTest {
                 .projectPosition("junior")
                 .employee(employee)
                 .project(project)
-                .allocationHours(6)
+                .allocationHours(6.2)
                 .uid("1234")
                 .build();
         when(assignmentRepository.findAssignmentByUid(anyString())).thenReturn(Optional.of(assignment));
@@ -231,7 +231,7 @@ public class AssignmentServiceTest {
                 .startDate(new SimpleDateFormat("yyyy-MM-dd").parse("2001-11-11"))
                 .endDate(new SimpleDateFormat("yyyy-MM-dd").parse("2010-11-11"))
                 .projectPosition("junior")
-                .allocationHours(6)
+                .allocationHours(6.2)
                 .employeeUid("123")
                 .projectUid("123")
                 .uid("1234")
@@ -280,7 +280,7 @@ public class AssignmentServiceTest {
                 .startDate(new SimpleDateFormat("yyyy-MM-dd").parse("2001-11-11"))
                 .endDate(new SimpleDateFormat("yyyy-MM-dd").parse("2010-11-11"))
                 .projectPosition("junior")
-                .allocationHours(6)
+                .allocationHours(6.2)
                 .employeeUid("123")
                 .projectUid("123")
                 .uid("1234")

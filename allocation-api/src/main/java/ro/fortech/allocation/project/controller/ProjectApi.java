@@ -10,6 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import ro.fortech.allocation.employees.dto.EmployeeDto;
 import ro.fortech.allocation.project.dto.ProjectAssignmentsDto;
 import ro.fortech.allocation.project.dto.ProjectRequestDto;
 import ro.fortech.allocation.project.dto.ProjectResponseDto;
@@ -82,4 +83,14 @@ public interface ProjectApi {
             @ApiResponse(code = 400, message = "Bad request")
     })
     ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file) throws IOException;
+
+
+    @ResponseStatus(code = HttpStatus.OK)
+    @PatchMapping(path = "/{projectUid}")
+    @ApiOperation(value = "Add a technology to a project")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully added technology to the project"),
+            @ApiResponse(code = 400, message = "Bad request")
+    })
+    ResponseEntity<ProjectResponseDto> addTechnologyToProject(@PathVariable String projectUid, @RequestParam String technologyUid);
 }

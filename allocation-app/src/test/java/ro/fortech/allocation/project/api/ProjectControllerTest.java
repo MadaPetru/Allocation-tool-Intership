@@ -26,22 +26,21 @@ import ro.fortech.allocation.project.dto.ProjectAssignmentsDto;
 import ro.fortech.allocation.project.dto.ProjectRequestDto;
 import ro.fortech.allocation.project.dto.ProjectResponseDto;
 import ro.fortech.allocation.project.service.ProjectService;
+import ro.fortech.allocation.technology.dto.TechnologyDto;
 
 import javax.validation.ConstraintViolation;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 @RunWith(SpringRunner.class)
 @EnableSpringDataWebSupport
-public class ProjectApiControllerTest {
+public class ProjectControllerTest {
     private static final ObjectMapper objectMapper = new ObjectMapper();
     private static final String PROJECTS_URL = "/projects";
 
@@ -73,7 +72,7 @@ public class ProjectApiControllerTest {
     }
 
     @Test
-    public void validation_givenNonValid_expectConstraintViolation() throws ParseException {
+    public void validation_givenNonValid_expectConstraintViolation(){
         ProjectRequestDto nonValidProjectRequestDto = ProjectFactory.getInvalidProjectRequestDto();
         Set<ConstraintViolation<ProjectRequestDto>> constraintViolationSet = validator.validateProperty(nonValidProjectRequestDto, "name");
         Assertions.assertEquals(1, constraintViolationSet.size());
@@ -109,7 +108,7 @@ public class ProjectApiControllerTest {
                 .startDate(new SimpleDateFormat("yyyy-MM-dd").parse("2020-05-10"))
                 .endDate(new SimpleDateFormat("yyyy-MM-dd").parse("2020-05-10"))
                 .projectPosition("position")
-                .allocationHours(8)
+                .allocationHours(8.3)
                 .build();
 
         List<ProjectAssignmentDto> assignmentDtos = new ArrayList<>();
@@ -182,4 +181,23 @@ public class ProjectApiControllerTest {
                 .andExpect(status().isOk());
         verify(projectService, times(1)).deleteProject(projectRequestDto.getExternalId());
     }
+
+    @Test
+    public void addTechnologyToProject_expectProjectWithAddedTechnology() throws Exception {
+        ProjectResponseDto projectResponseDto = ProjectFactory.getProjectResponseDto();
+        TechnologyDto someTech = TechnologyDto.builder().name("SomeTech").externalId("SomeExternalUID").build();
+
+        projectResponseDto.getTechnologyDtos().add(someTech);
+
+        Iterator iterator = projectResponseDto.getTechnologyDtos().iterator();
+
+        when(projectService.addTechnologyToProject(projectResponseDto.getExternalId(), someTech.getExternalId())).thenReturn(projectResponseDto);
+
+        mockMvc.perform(patch("/projects/" + projectResponseDto.getExternalId())
+                        .param("technologyUid", "SomeExternalUID"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.technologyDtos[0]").value(iterator.next()))
+                .andExpect(jsonPath("$.technologyDtos[1]").value(iterator.next()));
+    }
+
 }

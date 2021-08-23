@@ -8,12 +8,7 @@ import ro.fortech.allocation.technology.model.Technology;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import static java.util.Arrays.asList;
+import java.util.*;
 
 public class EmployeeFactory {
     public static Employee createEmployee() throws ParseException {
@@ -71,12 +66,12 @@ public class EmployeeFactory {
     private static Set<TechnologyDto> getTechnologiesDTOs() {
         TechnologyDto techOne = TechnologyDto.builder().name("TechOne").externalId("TechnologyUID_One").build();
 
-        return new HashSet<>(asList(techOne));
+        return new HashSet<>(Collections.singletonList(techOne));
     }
 
     private static Set<Technology> getTechnologies() {
         Technology techOneDto = Technology.builder().name("TechOne").externalId("TechnologyUID_One").build();
 
-        return new HashSet<>(asList(techOneDto));
+        return new HashSet<>(Collections.singletonList(techOneDto));
     }
 }

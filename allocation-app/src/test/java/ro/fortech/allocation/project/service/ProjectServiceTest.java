@@ -21,6 +21,7 @@ import ro.fortech.allocation.project.dto.ProjectResponseDto;
 import ro.fortech.allocation.project.exception.ProjectNotFoundException;
 import ro.fortech.allocation.project.model.Project;
 import ro.fortech.allocation.project.repository.ProjectRepository;
+import ro.fortech.allocation.technology.dto.TechnologyDto;
 import ro.fortech.allocation.technology.model.Technology;
 import ro.fortech.allocation.technology.repository.TechnologyRepository;
 
@@ -120,7 +121,7 @@ public class ProjectServiceTest {
                 .startDate(new SimpleDateFormat("yyyy-MM-dd").parse("2020-05-10"))
                 .endDate(new SimpleDateFormat("yyyy-MM-dd").parse("2020-06-10"))
                 .projectPosition(".net")
-                .allocationHours(8)
+                .allocationHours(8.3)
                 .build();
 
         Set<Assignment> projectAssignment = new HashSet<>();
@@ -247,5 +248,26 @@ public class ProjectServiceTest {
                 () -> projectService.deleteProject(project.getExternalId()));
         String expectedMessage = "Could not find project with externalId: " + project.getExternalId();
         assertEquals(expectedMessage, exception.getMessage());
+    }
+
+    @Test
+    public void addTechnologyToProject_givenProjectExternalIdAndTechnologyUid_expectProjectWithAddedTechnology() throws ParseException {
+        Project project = ProjectFactory.getProject();
+        ProjectResponseDto projectResponseDto = ProjectFactory.getProjectResponseDto();
+
+        Technology technology = Technology.builder().name("SomeTechnology").externalId("SomeExternalID").build();
+        TechnologyDto technologyDto = TechnologyDto.builder().name("SomeTechnology").externalId("SomeExternalID").build();
+
+        projectResponseDto.getTechnologyDtos().add(technologyDto);
+
+        when(projectRepository.findProjectByExternalId(project.getExternalId())).thenReturn(Optional.of(project));
+        when(technologyRepository.findByExternalId(technology.getExternalId())).thenReturn(Optional.of(technology));
+        when(projectRepository.save(any(Project.class))).thenReturn(project);
+        when(mapper.map(project, ProjectResponseDto.class)).thenReturn(projectResponseDto);
+
+        ProjectResponseDto result = projectService.addTechnologyToProject(project.getExternalId(), technology.getExternalId());
+
+        assertEquals(projectResponseDto.getTechnologyDtos().size(), result.getTechnologyDtos().size());
+
     }
 }

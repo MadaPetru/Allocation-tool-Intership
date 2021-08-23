@@ -147,7 +147,7 @@ public class AssignmentValidationServiceTest {
 
         AssignmentRequestDto updatedAssignmentDto = makeDto();
         updatedAssignmentDto.setProjectUid("99");
-        updatedAssignmentDto.setAllocationHours(6);
+        updatedAssignmentDto.setAllocationHours(6.0);
 
         when(employeeRepository.findEmployeeByUid(anyString())).thenReturn(Optional.of(employee));
         when(assignmentRepository.findAssignmentsByEmployee(any(Employee.class))).thenReturn(workingAssignments);
@@ -173,7 +173,7 @@ public class AssignmentValidationServiceTest {
         EmployeeDto employeeDto = makeEmployeeDto();
         ProjectResponseDto projectDto = makeProjectDto();
         AssignmentRequestDto updatedAssignmentDto = makeDto();
-        updatedAssignmentDto.setAllocationHours(3);
+        updatedAssignmentDto.setAllocationHours(3.0);
 
         when(employeeService.findByUid(anyString())).thenReturn(employeeDto);
         when(projectService.getProjectByExternalId(anyString())).thenReturn(projectDto);
@@ -195,7 +195,7 @@ public class AssignmentValidationServiceTest {
 
         AssignmentRequestDto updatedAssignmentDto = makeDto();
         updatedAssignmentDto.setProjectUid("99");
-        updatedAssignmentDto.setAllocationHours(6);
+        updatedAssignmentDto.setAllocationHours(6.0);
         when(employeeRepository.findEmployeeByUid(anyString())).thenReturn(java.util.Optional.of(employee));
         when(assignmentRepository.findAssignmentsByEmployee(any(Employee.class))).thenReturn(assignmentList);
         when(projectRepository.findProjectByExternalId(anyString())).thenReturn(Optional.of(project));
@@ -254,7 +254,7 @@ public class AssignmentValidationServiceTest {
                 .startDate(new SimpleDateFormat("yyyy-MM-dd").parse("2020-05-10"))
                 .endDate(new SimpleDateFormat("yyyy-MM-dd").parse("2020-06-10"))
                 .projectPosition("junior")
-                .allocationHours(4)
+                .allocationHours(4.0)
                 .build();
     }
 
@@ -264,7 +264,7 @@ public class AssignmentValidationServiceTest {
                 .startDate(new SimpleDateFormat("yyyy-MM-dd").parse(startDate))
                 .endDate(new SimpleDateFormat("yyyy-MM-dd").parse(endDate))
                 .projectPosition("junior")
-                .allocationHours(4)
+                .allocationHours(4.0)
                 .build();
     }
 
@@ -276,7 +276,7 @@ public class AssignmentValidationServiceTest {
                 .startDate(new SimpleDateFormat("yyyy-MM-dd").parse("2018-05-10"))
                 .endDate(new SimpleDateFormat("yyyy-MM-dd").parse("9999-12-31"))
                 .projectPosition("junior")
-                .allocationHours(4)
+                .allocationHours(4.0)
                 .build();
     }
 

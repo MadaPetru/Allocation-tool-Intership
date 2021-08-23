@@ -138,7 +138,7 @@ public class AssignmentControllerTest {
 
         constraintViolationSet = validator.validateProperty(nonValidAssignmentRequestDto, "allocationHours");
         Assertions.assertEquals(1, constraintViolationSet.size());
-        Assertions.assertEquals("must be greater than or equal to 1", constraintViolationSet.iterator().next().getMessage());
+        Assertions.assertEquals("must be greater than 0", constraintViolationSet.iterator().next().getMessage());
 
         constraintViolationSet = validator.validateProperty(nonValidAssignmentRequestDto, "projectPosition");
         Assertions.assertEquals(1, constraintViolationSet.size());
@@ -155,7 +155,7 @@ public class AssignmentControllerTest {
                 .startDate(new SimpleDateFormat("yyyy-MM-dd").parse("2020-05-10"))
                 .endDate(new SimpleDateFormat("yyyy-MM-dd").parse("2020-06-10"))
                 .projectPosition("a")
-                .allocationHours(2)
+                .allocationHours(2.2)
                 .build();
     }
 
@@ -166,7 +166,7 @@ public class AssignmentControllerTest {
                 .startDate(new SimpleDateFormat("yyyy-MM-dd").parse("2020-05-10"))
                 .endDate(new SimpleDateFormat("yyyy-MM-dd").parse("2020-06-10"))
                 .projectPosition("a")
-                .allocationHours(2)
+                .allocationHours(2.2)
                 .build();
     }
 
@@ -175,7 +175,7 @@ public class AssignmentControllerTest {
                 .projectUid("")
                 .employeeUid("")
                 .projectPosition("")
-                .allocationHours(-1)
+                .allocationHours(-2.2)
                 .build();
     }
 }
