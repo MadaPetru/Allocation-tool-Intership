@@ -11,6 +11,7 @@ import ro.fortech.allocation.employees.model.Employee;
 import ro.fortech.allocation.employees.repository.EmployeeRepository;
 import ro.fortech.allocation.project.model.Project;
 import ro.fortech.allocation.project.repository.ProjectRepository;
+import ro.fortech.allocation.technology.dto.TechnologyDto;
 import ro.fortech.allocation.technology.exception.TechnologyAlreadyExistsInTheDatabase;
 import ro.fortech.allocation.technology.exception.TechnologyNotFoundByExternalIdException;
 import ro.fortech.allocation.technology.model.Technology;
@@ -34,7 +35,7 @@ public class TechnologyService {
     private final ProjectRepository projectRepository;
     private final AssignmentRepository assignmentRepository;
 
-    public ro.fortech.allocation.technology.dto.TechnologyDto add(@Valid ro.fortech.allocation.technology.dto.TechnologyDto dto) {
+    public TechnologyDto add(@Valid TechnologyDto dto) {
         String convertedName = dto.getName().toLowerCase().trim().replaceAll(" +", " ");
         Technology tech = this.dtoToTechnology(dto);
         tech.setName(convertedName);
@@ -46,11 +47,11 @@ public class TechnologyService {
         }
     }
 
-    public Page<ro.fortech.allocation.technology.dto.TechnologyDto> findAll(Pageable pageable) {
+    public Page<TechnologyDto> findAll(Pageable pageable) {
         return repository.findAll(pageable).map(this::technologyToDto);
     }
 
-    public ro.fortech.allocation.technology.dto.TechnologyDto update(@Valid ro.fortech.allocation.technology.dto.TechnologyDto dto, String externalId) {
+    public TechnologyDto update(@Valid TechnologyDto dto, String externalId) {
         Technology technology = repository.findByExternalId(externalId).orElseThrow(() -> new TechnologyNotFoundByExternalIdException(externalId));
         String convertedName = dto.getName().toLowerCase().trim().replaceAll(" +", " ");
         Optional<Technology> tech = repository.findByName(convertedName);
@@ -63,7 +64,7 @@ public class TechnologyService {
         }
     }
 
-    public ro.fortech.allocation.technology.dto.TechnologyDto findByExternalId(String externalId) {
+    public TechnologyDto findByExternalId(String externalId) {
         Technology technology = repository.findByExternalId(externalId).orElseThrow(() -> new TechnologyNotFoundByExternalIdException(externalId));
         return technologyToDto(technology);
     }
@@ -83,7 +84,7 @@ public class TechnologyService {
         return true;
     }
 
-    public List<ro.fortech.allocation.technology.dto.TechnologyDto> findTechnologiesByName(String name) {
+    public List<TechnologyDto> findTechnologiesByName(String name) {
 
         return repository.findTechnologyByName(name)
                 .stream()
@@ -91,14 +92,14 @@ public class TechnologyService {
                 .collect(Collectors.toList());
     }
 
-    public ro.fortech.allocation.technology.dto.TechnologyDto technologyToDto(Technology technology) {
-        ro.fortech.allocation.technology.dto.TechnologyDto dto = new ro.fortech.allocation.technology.dto.TechnologyDto();
+    public TechnologyDto technologyToDto(Technology technology) {
+        TechnologyDto dto = new TechnologyDto();
         dto.setExternalId(technology.getExternalId());
         dto.setName(technology.getName());
         return dto;
     }
 
-    public Technology dtoToTechnology(ro.fortech.allocation.technology.dto.TechnologyDto dto) {
+    public Technology dtoToTechnology(TechnologyDto dto) {
         Technology technology = new Technology();
         technology.setExternalId(dto.getExternalId());
         technology.setName(dto.getName());
