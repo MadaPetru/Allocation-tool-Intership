@@ -14,6 +14,6 @@ public interface TechnologyRepository extends JpaRepository<Technology, Long> {
     Optional<Technology> findByExternalId(String externalId);
     boolean deleteByExternalId(String externalId);
     Optional<Technology> findByName(String name);
-    @Query(value = "select * from technologies t where t.name LIKE %:name%",nativeQuery = true )
+    @Query(value = "select * from technologies t where t.name LIKE %:name%", nativeQuery = true )
     List<Technology> findTechnologyByName(@Param("name") String name);
 }

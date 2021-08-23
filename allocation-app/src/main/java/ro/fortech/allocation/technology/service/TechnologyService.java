@@ -6,7 +6,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
-import ro.fortech.allocation.assignments.repository.AssignmentRepository;
 import ro.fortech.allocation.employees.model.Employee;
 import ro.fortech.allocation.employees.repository.EmployeeRepository;
 import ro.fortech.allocation.project.model.Project;
@@ -30,11 +29,9 @@ import static java.util.function.Predicate.isEqual;
 @Validated
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class TechnologyService {
-    private static final Set<Technology> NULL = null;
-    private final TechnologyRepository repository;
+    private final TechnologyRepository technologyRepository;
     private final EmployeeRepository employeeRepository;
     private final ProjectRepository projectRepository;
-    private final AssignmentRepository assignmentRepository;
 
     public TechnologyDto add(@Valid TechnologyDto dto) {
         String convertedName = dto.getName().toLowerCase().trim().replaceAll(" +", " ");
@@ -42,53 +39,53 @@ public class TechnologyService {
         tech.setName(convertedName);
         tech.setExternalId(UUID.randomUUID().toString());
         try {
-            return this.technologyToDto(repository.save(tech));
+            return this.technologyToDto(technologyRepository.save(tech));
         } catch (Exception e) {
             throw new TechnologyAlreadyExistsInTheDatabase(dto.getName(), tech.getName());
         }
     }
 
     public Page<TechnologyDto> findAll(Pageable pageable) {
-        return repository.findAll(pageable).map(this::technologyToDto);
+        return technologyRepository.findAll(pageable).map(this::technologyToDto);
     }
 
     public TechnologyDto update(@Valid TechnologyDto dto, String externalId) {
-        Technology technology = repository.findByExternalId(externalId).orElseThrow(() -> new TechnologyNotFoundByExternalIdException(externalId));
+        Technology technology = technologyRepository.findByExternalId(externalId).orElseThrow(() -> new TechnologyNotFoundByExternalIdException(externalId));
         String convertedName = dto.getName().toLowerCase().trim().replaceAll(" +", " ");
-        Optional<Technology> tech = repository.findByName(convertedName);
+        Optional<Technology> tech = technologyRepository.findByName(convertedName);
         if (tech.isPresent()) {
             throw new TechnologyAlreadyExistsInTheDatabase(dto.getName(), tech.get().getName());
         } else {
             technology.setName(convertedName);
-            repository.save(technology);
+            technologyRepository.save(technology);
             return this.technologyToDto(technology);
         }
     }
 
     public TechnologyDto findByExternalId(String externalId) {
-        Technology technology = repository.findByExternalId(externalId).orElseThrow(() -> new TechnologyNotFoundByExternalIdException(externalId));
+        Technology technology = technologyRepository.findByExternalId(externalId).orElseThrow(() -> new TechnologyNotFoundByExternalIdException(externalId));
         return technologyToDto(technology);
     }
 
     public boolean deleteByExternalId(String externalId) {
-        Technology technology = repository.findByExternalId(externalId).orElseThrow(() -> new TechnologyNotFoundByExternalIdException(externalId));
+        Technology technology = technologyRepository.findByExternalId(externalId).orElseThrow(() -> new TechnologyNotFoundByExternalIdException(externalId));
 
         List<Employee> employees = getEmployeesWithTechnology(externalId);
         List<Project> projects = getProjectsWithTechnology(externalId);
 
-        employees.stream().forEach(employee -> {
-            eraseTechnologyForEmployee(technology, employee);
-        });
-        projects.stream().forEach(project -> {
-            eraseTechnologyForProject(technology, project);
-        });
+        employees.forEach(employee ->
+                eraseTechnologyForEmployee(technology, employee)
+        );
 
-        repository.delete(technology);
+        projects.forEach(project ->
+                eraseTechnologyForProject(technology, project)
+        );
+
+        technologyRepository.delete(technology);
 
         return true;
     }
 
-    public List<TechnologyDto> findTechnologiesByName(String name) {
     private void eraseTechnologyForEmployee(Technology technology, Employee employee) {
         Set<Technology> set = employee.getTechnologies();
         Set<Technology> setResult = set.stream().filter(e -> !e.getName().equals(technology.getName()))
@@ -107,7 +104,7 @@ public class TechnologyService {
     }
 
     public List<TechnologyDto> findTechnologiesByName(String name) {
-        return repository.findTechnologyByName(name)
+        return technologyRepository.findTechnologyByName(name)
                 .stream()
                 .map(this::technologyToDto)
                 .collect(Collectors.toList());
@@ -139,29 +136,17 @@ public class TechnologyService {
                 .collect(Collectors.toList());
     }
 
-    private void deleteAllAssignmentsWithProjectsOrEmployees(List<Employee> employees, List<Project> projects) {
-        for (Employee employee : employees) {
-            assignmentRepository.deleteAll(assignmentRepository.findAssignmentsByEmployee(employee));
-        }
-
-        for (Project project : projects) {
-            assignmentRepository.deleteAll(assignmentRepository.findAssignmentsByProject(project));
-        }
-    }
-
     private boolean employeeHasTechnology(Employee employee, String externalID) {
         Set<Technology> technologies = employee.getTechnologies();
-        boolean hasTechnology = technologies.stream()
+        return technologies.stream()
                 .map(Technology::getExternalId)
                 .anyMatch(isEqual(externalID));
-        return hasTechnology;
     }
 
     private boolean projectHasTechnology(Project project, String externalId) {
         Set<Technology> technologies = project.getTechnologies();
-        boolean hasTechnology = technologies.stream()
+        return technologies.stream()
                 .map(Technology::getExternalId)
                 .anyMatch(isEqual(externalId));
-        return hasTechnology;
     }
 }

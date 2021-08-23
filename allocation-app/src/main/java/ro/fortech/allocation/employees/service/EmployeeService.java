@@ -147,6 +147,8 @@ public class EmployeeService {
         Set<Technology> technologies = employee.getTechnologies();
         technologies.add(technology);
 
+        employee.setTechnologies(technologies);
+
         return fromEntityToDto(employeeRepository.save(employee));
     }
 }
